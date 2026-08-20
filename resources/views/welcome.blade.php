@@ -56,7 +56,7 @@
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                     <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                    <span>PostgreSQL 16 + pgvector • Local Ollama AI & OpenAI • Real-Time Telemetry</span>
+                    <span>PostgreSQL 16 + pgvector • Local Ollama AI & Production OpenAI • Real-Time Telemetry</span>
                 </div>
 
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-white max-w-4xl mx-auto leading-tight sm:leading-none">
@@ -95,7 +95,7 @@
                         Articles for All Trade Schools with Semantic Vector Recommendations
                     </h2>
                     <p class="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed">
-                        A curated library of 18 generic trade guides spanning Welding, Electrical, HVAC, Lab Safety, Apprenticeships, and Financial Aid. Every guide leverages PostgreSQL cosine distance (<code class="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">&lt;=&gt;</code>) to automatically recommend the top related articles in <strong class="text-zinc-900 dark:text-white">&lt;2ms</strong> without external LLM runtime latency.
+                        A curated library of 18 trade articles spanning Welding, Electrical, HVAC, Lab Safety, Apprenticeships, and Financial Aid. Every article leverages PostgreSQL cosine distance (<code class="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">&lt;=&gt;</code>) to automatically recommend the top related articles in <strong class="text-zinc-900 dark:text-white">&lt;2ms</strong> without external LLM runtime latency.
                     </p>
                 </div>
 
@@ -124,7 +124,7 @@
                     <div class="space-y-2 text-center md:text-left">
                         <h3 class="text-xl font-bold">Try the Vector Recommendation Demo</h3>
                         <p class="text-indigo-200 text-sm max-w-xl">
-                            Open any trade guide to see live semantic similarity percentage scores (e.g. <em>81% Semantic Match</em>) and toggle between "All Audiences" and "Same Audience" hybrid filtering.
+                            Open any article to see live semantic similarity percentage scores (e.g. <em>81% Semantic Match</em>) and toggle between "All Audiences" and "Same Audience" hybrid filtering.
                         </p>
                     </div>
                     <a
@@ -173,7 +173,7 @@
                         </div>
                         <h3 class="text-lg font-bold">Pluggable AI Engine (Ollama, OpenAI & More)</h3>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Develop 100% free and offline on your machine using <strong>local Ollama</strong> with <code class="text-xs font-mono">nomic-embed-text</code> (512 dimensions), or seamlessly switch to cloud <strong>OpenAI</strong> (<code class="text-xs font-mono">text-embedding-3-small</code>) in production via environment variables. Swapping in new providers (like Voyage AI, Cohere, or Mistral) only requires configuring the endpoint and model.
+                            Develop 100% free and offline on your machine using <strong>local Ollama</strong> (<code class="text-xs font-mono">nomic-embed-text</code>), and this app seamlessly switches to cloud <strong>OpenAI</strong> (<code class="text-xs font-mono">text-embedding-3-small</code>) in production. Because <code class="text-xs font-mono">EmbeddingService</code> connects to standard OpenAI-compatible endpoints, swapping to other providers (like Mistral or LocalAI) is 100% config-driven via <code class="text-xs font-mono">.env</code>.
                         </p>
                     </div>
 

@@ -12,7 +12,7 @@
             <div>
                 <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
                 <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    Browse guides with in-database vector recommendations powered by PostgreSQL & pgvector.
+                    Browse articles with in-database vector recommendations powered by PostgreSQL & pgvector.
                 </p>
             </div>
             <div class="flex items-center gap-3">
