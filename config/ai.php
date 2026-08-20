@@ -17,6 +17,7 @@ return [
     |
     */
     'embedding' => [
+        'provider' => env('AI_EMBEDDING_PROVIDER', null),
         'model' => env('AI_EMBEDDING_MODEL', 'text-embedding-3-small'),
         'dimensions' => (int) env('AI_EMBEDDING_DIMENSIONS', 512),
         'chunk_size' => (int) env('AI_CHUNK_SIZE', 500),

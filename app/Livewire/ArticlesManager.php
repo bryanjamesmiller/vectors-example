@@ -226,9 +226,9 @@ class ArticlesManager extends Component
             ->when($this->search !== '', function (Builder $query): void {
                 $term = '%'.$this->search.'%';
                 $query->where(function (Builder $sub) use ($term): void {
-                    $sub->where('title', 'like', $term)
-                        ->orWhere('summary', 'like', $term)
-                        ->orWhere('content', 'like', $term);
+                    $sub->whereLike('title', $term, caseSensitive: false)
+                        ->orWhereLike('summary', $term, caseSensitive: false)
+                        ->orWhereLike('content', $term, caseSensitive: false);
                 });
             })
             ->when($this->selectedAudience !== '', function (Builder $query): void {

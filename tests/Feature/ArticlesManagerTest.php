@@ -32,7 +32,7 @@ test('authenticated users can see the articles manager and metrics', function ()
         ->get(route('dashboard'))
         ->assertOk()
         ->assertSee('Articles & Vector Index')
-        ->assertSee('Real-Time OpenAI Vector Embeddings')
+        ->assertSee('Real-Time AI Vector Embeddings')
         ->assertSee('Welding Lab Safety Standards');
 });
 
@@ -165,7 +165,7 @@ test('articles can be searched and filtered by audience', function () {
 
     Livewire::actingAs($user)
         ->test(ArticlesManager::class)
-        ->set('search', 'Electricians')
+        ->set('search', 'eLeCtRiCiAnS')
         ->assertSee('Electrical Theory for Electricians')
         ->assertDontSee('Plumbing Hydraulics for Teachers')
         ->set('search', '')

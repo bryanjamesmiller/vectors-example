@@ -6,6 +6,7 @@ namespace App\Services\Ai;
 
 use Illuminate\Support\Facades\Cache;
 use OpenAI\Laravel\Facades\OpenAI;
+use OpenAI\Responses\Embeddings\CreateResponse;
 use Throwable;
 
 class EmbeddingService
@@ -44,8 +45,11 @@ class EmbeddingService
         $dimensions = (int) config('ai.embedding.dimensions', 512);
         $baseUri = (string) (config('openai.base_uri') ?? 'https://api.openai.com/v1');
 
+        $configuredProvider = config('ai.embedding.provider');
         $isOllama = str_contains($baseUri, 'localhost') || str_contains($baseUri, '11434') || str_contains($model, 'nomic');
-        $providerName = $isOllama ? 'Ollama (Local Offline AI)' : 'OpenAI API (Cloud)';
+        $providerName = $configuredProvider !== null && $configuredProvider !== ''
+            ? (string) $configuredProvider
+            : ($isOllama ? 'Ollama (Local Offline AI)' : 'OpenAI API (Cloud)');
 
         if ($cleaned === '') {
             return [
@@ -62,17 +66,21 @@ class EmbeddingService
         }
 
         $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+        $startTime = hrtime(true);
 
         if (! $bypassCache) {
             /** @var list<float>|null $cached */
             $cached = Cache::get($cacheKey);
             if (is_array($cached) && ! empty($cached)) {
+                $endTime = hrtime(true);
+                $latencyMs = max(0.01, round(($endTime - $startTime) / 1_000_000, 2));
+
                 return [
                     'embedding' => $cached,
                     'provider' => $providerName,
                     'model' => $model,
                     'dimensions' => count($cached),
-                    'latency_ms' => 0.25,
+                    'latency_ms' => $latencyMs,
                     'is_cached' => true,
                     'endpoint' => $baseUri,
                     'character_count' => mb_strlen($cleaned),
@@ -81,14 +89,15 @@ class EmbeddingService
             }
         }
 
-        $startTime = hrtime(true);
-
         try {
-            $response = OpenAI::embeddings()->create([
-                'model' => $model,
-                'input' => $cleaned,
-                'dimensions' => $dimensions,
-            ]);
+            /** @var CreateResponse $response */
+            $response = retry(2, function () use ($model, $cleaned, $dimensions) {
+                return OpenAI::embeddings()->create([
+                    'model' => $model,
+                    'input' => $cleaned,
+                    'dimensions' => $dimensions,
+                ]);
+            }, 500);
 
             $endTime = hrtime(true);
             $latencyMs = round(($endTime - $startTime) / 1_000_000, 2);
@@ -116,6 +125,11 @@ class EmbeddingService
             $endTime = hrtime(true);
             $latencyMs = round(($endTime - $startTime) / 1_000_000, 2);
 
+            $errorMessage = $e->getMessage();
+            if (str_contains(strtolower($errorMessage), 'rate limit') || str_contains(strtolower($errorMessage), 'quota')) {
+                $errorMessage = 'OpenAI Rate Limit / Credit Quota Exceeded (HTTP 429). Please verify your OpenAI billing credit balance or wait a moment before retrying.';
+            }
+
             return [
                 'embedding' => [],
                 'provider' => $providerName,
@@ -125,7 +139,7 @@ class EmbeddingService
                 'is_cached' => false,
                 'endpoint' => $baseUri,
                 'character_count' => mb_strlen($cleaned),
-                'error' => $e->getMessage(),
+                'error' => $errorMessage,
             ];
         }
     }

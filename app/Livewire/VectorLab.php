@@ -10,6 +10,7 @@ use App\Services\Ai\EmbeddingService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -134,6 +135,21 @@ class VectorLab extends Component
         {$summaryText}## Content
         {$this->content}
         MARKDOWN;
+
+        if ($this->forceLiveCall) {
+            $key = 'vector-lab-live:'.(request()->ip() ?? 'unknown');
+            if (RateLimiter::tooManyAttempts($key, 15)) {
+                $seconds = RateLimiter::availableIn($key);
+                Flux::toast(
+                    text: __('Rate limit reached. Please wait :seconds seconds before forcing another live API call.', ['seconds' => $seconds]),
+                    variant: 'danger'
+                );
+
+                return;
+            }
+
+            RateLimiter::hit($key, 60);
+        }
 
         $telemetryResult = $embeddingService->generateWithTelemetry($textToEmbed, $this->forceLiveCall);
 
