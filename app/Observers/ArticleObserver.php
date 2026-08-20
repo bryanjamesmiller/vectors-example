@@ -14,7 +14,7 @@ class ArticleObserver
      */
     public function saved(Article $article): void
     {
-        if ($article->wasChanged(['title', 'content', 'summary', 'audience']) || is_null($article->embedding)) {
+        if (($article->wasChanged(['title', 'content', 'summary', 'audience']) && ! $article->wasChanged('embedding')) || is_null($article->embedding)) {
             GenerateArticleEmbeddingJob::dispatch($article);
         }
     }

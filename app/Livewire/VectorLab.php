@@ -13,10 +13,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Pgvector\Laravel\Vector;
 
+/**
+ * @property-read bool $isCached
+ */
 #[Title('Interactive AI Vector Lab — Live Telemetry & Proximity Inspector')]
 class VectorLab extends Component
 {
@@ -121,6 +125,28 @@ class VectorLab extends Component
     }
 
     /**
+     * Determine whether an embedding is already cached for the current input.
+     */
+    #[Computed]
+    public function isCached(): bool
+    {
+        $summaryText = $this->summary ? "**Summary:** {$this->summary}\n\n" : '';
+        $textToEmbed = <<<MARKDOWN
+        # {$this->title}
+        **Target Audience:** {$this->audience}
+        {$summaryText}## Content
+        {$this->content}
+        MARKDOWN;
+
+        $model = (string) config('ai.embedding.model', 'nomic-embed-text');
+        $dimensions = (int) config('ai.embedding.dimensions', 512);
+        $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
+        $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+
+        return Cache::has($cacheKey);
+    }
+
+    /**
      * Generate embedding with live telemetry and execute in-database pgvector similarity query.
      */
     public function generateEmbedding(EmbeddingService $embeddingService): void
@@ -140,11 +166,8 @@ class VectorLab extends Component
         {$this->content}
         MARKDOWN;
 
-        $model = (string) config('ai.embedding.model', 'nomic-embed-text');
-        $dimensions = (int) config('ai.embedding.dimensions', 512);
-        $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
-        $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
-        $isCached = ! $this->forceLiveCall && Cache::has($cacheKey);
+        $forceLive = ! $this->isCached() || $this->forceLiveCall;
+        $isCached = ! $forceLive;
 
         if (! $isCached) {
             $key = 'vector-lab-live:'.(request()->ip() ?? 'unknown');
@@ -161,7 +184,7 @@ class VectorLab extends Component
             RateLimiter::hit($key, 60);
         }
 
-        $telemetryResult = $embeddingService->generateWithTelemetry($textToEmbed, $this->forceLiveCall);
+        $telemetryResult = $embeddingService->generateWithTelemetry($textToEmbed, $forceLive);
 
         $this->telemetry = [
             'provider' => $telemetryResult['provider'],
@@ -182,16 +205,36 @@ class VectorLab extends Component
             $existingArticle = Article::where('title', $this->title)->first();
 
             if ($existingArticle) {
+                Article::withoutEvents(function () use ($existingArticle): void {
+                    $existingArticle->update([
+                        'audience' => Audience::from($this->audience),
+                        'summary' => ! empty($this->summary) ? $this->summary : null,
+                        'content' => $this->content,
+                        'is_published' => true,
+                        'embedding' => new Vector($this->generatedVector),
+                    ]);
+                });
+
                 $this->isPublished = true;
                 $this->publishedArticleSlug = $existingArticle->slug;
                 $this->isDuplicateTitle = true;
 
-                Flux::toast(
-                    text: __('An article with the title ":title" already exists. Vector calculated, but please update the title before saving a new article.', [
-                        'title' => $this->title,
-                    ]),
-                    variant: 'warning'
-                );
+                if ($telemetryResult['is_cached']) {
+                    Flux::toast(
+                        text: __('⚡ 512d vector resolved from cache in :ms ms (Article already exists)', [
+                            'ms' => $telemetryResult['latency_ms'],
+                        ]),
+                        variant: 'success'
+                    );
+                } else {
+                    Flux::toast(
+                        text: __('🌐 Live 512d vector generated in :ms ms via :provider (Article already exists)', [
+                            'ms' => $telemetryResult['latency_ms'],
+                            'provider' => $telemetryResult['provider'],
+                        ]),
+                        variant: 'success'
+                    );
+                }
             } else {
                 $this->isDuplicateTitle = false;
 
@@ -204,7 +247,7 @@ class VectorLab extends Component
                     $counter++;
                 }
 
-                $article = Article::create([
+                $article = Article::withoutEvents(fn (): Article => Article::create([
                     'title' => $this->title,
                     'slug' => $slug,
                     'audience' => Audience::from($this->audience),
@@ -212,7 +255,7 @@ class VectorLab extends Component
                     'content' => $this->content,
                     'is_published' => true,
                     'embedding' => new Vector($this->generatedVector),
-                ]);
+                ]));
 
                 $this->isPublished = true;
                 $this->publishedArticleSlug = $article->slug;

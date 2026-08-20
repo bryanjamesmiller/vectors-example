@@ -62,7 +62,7 @@
                         <label for="title" class="block text-xs font-medium uppercase text-zinc-600 dark:text-zinc-400">Title</label>
                         <input
                             id="title"
-                            wire:model="title"
+                            wire:model.blur="title"
                             type="text"
                             class="mt-1 block w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                             required
@@ -74,7 +74,7 @@
                         <label for="audience" class="block text-xs font-medium uppercase text-zinc-600 dark:text-zinc-400">Target Audience</label>
                         <select
                             id="audience"
-                            wire:model="audience"
+                            wire:model.live="audience"
                             class="mt-1 block w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                         >
                             @foreach ($audiences as $aud)
@@ -87,7 +87,7 @@
                         <label for="summary" class="block text-xs font-medium uppercase text-zinc-600 dark:text-zinc-400">Brief Summary</label>
                         <textarea
                             id="summary"
-                            wire:model="summary"
+                            wire:model.blur="summary"
                             rows="2"
                             class="mt-1 block w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                         ></textarea>
@@ -97,7 +97,7 @@
                         <label for="content" class="block text-xs font-medium uppercase text-zinc-600 dark:text-zinc-400">Markdown Content</label>
                         <textarea
                             id="content"
-                            wire:model="content"
+                            wire:model.blur="content"
                             rows="5"
                             class="mt-1 block w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm font-mono text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                             required
@@ -117,10 +117,17 @@
                     </div>
 
                     <div class="pt-2 flex flex-col gap-3">
-                        <label class="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer">
-                            <input wire:model="forceLiveCall" type="checkbox" class="rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500">
-                            <span>Bypass Cache (Force Live API Call)</span>
-                        </label>
+                        @if ($this->isCached)
+                            <label class="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                                <input wire:model="forceLiveCall" type="checkbox" class="rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500">
+                                <span>Bypass Cache <span class="text-zinc-500 dark:text-zinc-400 font-normal">(Force Live API Call — Cached Embedding Available)</span></span>
+                            </label>
+                        @else
+                            <label class="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 opacity-90 cursor-not-allowed" title="This content is not in cache yet, so a live AI embedding call is required.">
+                                <input type="checkbox" checked disabled class="rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500 cursor-not-allowed opacity-60">
+                                <span>Live AI API Call Required <span class="text-zinc-400 dark:text-zinc-500 font-normal">(New / Uncached Content)</span></span>
+                            </label>
+                        @endif
 
                         <button
                             type="submit"
@@ -296,11 +303,11 @@
                         {{-- In-Database Status Banner --}}
                         <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                             @if ($isDuplicateTitle)
-                                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+                                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
                                     <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                     </svg>
-                                    <span>An article with this title already exists in the database. Vector telemetry calculated; change title to save as a new article.</span>
+                                    <span>Article already exists in PostgreSQL database!</span>
                                 </div>
                             @else
                                 <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
