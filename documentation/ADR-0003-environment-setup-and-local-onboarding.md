@@ -77,6 +77,7 @@ for i in {1..30}; do
   fi
   if [ "$i" -eq 30 ]; then
     echo "Timed out waiting for PostgreSQL. Run 'docker logs pgvector-db' for details."
+    exit 1
   fi
   sleep 1
 done
