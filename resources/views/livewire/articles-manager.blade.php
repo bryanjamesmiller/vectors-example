@@ -42,11 +42,11 @@
                 </div>
                 <div>
                     <h2 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                        <span>Real-Time OpenAI Vector Embeddings</span>
-                        <span class="text-xs font-normal text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2 py-0.5 rounded">text-embedding-3-small</span>
+                        <span>Real-Time AI Vector Embeddings</span>
+                        <span class="text-xs font-normal text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/50 px-2 py-0.5 rounded font-mono">{{ config('ai.embedding.model') }}</span>
                     </h2>
                     <p class="mt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
-                        When you create or update an article, an asynchronous observer queues a background job that converts the article title, audience, and Markdown content into a <strong>512-dimension vector</strong> via OpenAI. PostgreSQL stores it in a native <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">vector(512)</code> column indexed with <strong>HNSW cosine distance (<code class="text-xs">&lt;=&gt;</code>)</strong>, powering instant semantic recommendations without third-party vector databases.
+                        When you create or update an article, an asynchronous observer queues a background job that converts the article title, audience, and Markdown content into a <strong>512-dimension vector</strong>. PostgreSQL stores it in a native <code class="text-xs bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded font-mono">vector(512)</code> column indexed with <strong>HNSW cosine distance (<code class="text-xs font-mono">&lt;=&gt;</code>)</strong>, powering instant semantic recommendations without third-party vector databases.
                     </p>
                 </div>
             </div>
@@ -101,6 +101,7 @@
             <input
                 wire:model.live.debounce.300ms="search"
                 type="search"
+                aria-label="Search articles by title or keyword"
                 placeholder="Search articles by title or keyword..."
                 class="w-full ps-9 pe-3 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
@@ -109,6 +110,7 @@
         <div class="flex items-center gap-3 w-full md:w-auto">
             <select
                 wire:model.live="selectedAudience"
+                aria-label="Filter by target audience"
                 class="text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-3 py-1.5 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             >
                 <option value="">All Audiences</option>
@@ -119,6 +121,7 @@
 
             <select
                 wire:model.live="publishedFilter"
+                aria-label="Filter by publication status"
                 class="text-sm rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-3 py-1.5 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             >
                 <option value="">All Statuses</option>
@@ -196,17 +199,28 @@
 
                             <td class="px-4 py-3.5 text-end whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5">
-                                    <a
-                                        href="{{ route('articles.show', $article) }}"
-                                        target="_blank"
-                                        title="View Live in Articles"
-                                        class="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-                                    >
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                        </svg>
-                                    </a>
+                                    @if ($article->is_published)
+                                        <a
+                                            href="{{ route('articles.show', $article) }}"
+                                            target="_blank"
+                                            title="View Live in Articles"
+                                            class="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                                        >
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <span
+                                            title="Draft (Publish to view publicly)"
+                                            class="p-1.5 rounded-md text-zinc-300 dark:text-zinc-700 cursor-not-allowed opacity-60"
+                                        >
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                            </svg>
+                                        </span>
+                                    @endif
 
                                     <button
                                         wire:click="openEditModal({{ $article->id }})"
@@ -253,26 +267,33 @@
 
     {{-- Create / Edit Article Modal --}}
     @if ($showArticleModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs">
+        <div
+            wire:keydown.window.escape="$set('showArticleModal', false)"
+            tabindex="0"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="article-modal-title"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs focus:outline-hidden"
+        >
             <div class="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-2xl border border-zinc-200 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
                 <div class="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
-                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                    <h3 id="article-modal-title" class="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                         <span>{{ $editingArticleId ? 'Edit Article' : 'Create New Article' }}</span>
                     </h3>
-                    <button wire:click="$set('showArticleModal', false)" type="button" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+                    <button wire:click="$set('showArticleModal', false)" type="button" aria-label="Close modal" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                {{-- Explanatory OpenAI Notice inside Modal --}}
+                {{-- Explanatory Notice inside Modal --}}
                 <div class="my-4 p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/30 text-xs text-blue-900 dark:text-blue-300 flex items-start gap-2.5">
                     <svg class="size-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
                     </svg>
                     <div>
-                        <strong class="font-semibold">Automatic AI Vector Generation:</strong> Saving will automatically dispatch a background job to convert this content into a 512-dimension vector embedding using OpenAI's <code class="bg-blue-100 dark:bg-blue-900/60 px-1 py-0.5 rounded text-xs font-mono">text-embedding-3-small</code> model.
+                        <strong class="font-semibold">Automatic AI Vector Generation:</strong> Saving will automatically dispatch a background job to convert this content into a 512-dimension vector embedding using <code class="bg-blue-100 dark:bg-blue-900/60 px-1 py-0.5 rounded text-xs font-mono">{{ config('ai.embedding.model') }}</code>.
                     </div>
                 </div>
 
@@ -367,7 +388,14 @@
 
     {{-- Delete Confirmation Modal --}}
     @if ($showDeleteModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs">
+        <div
+            wire:keydown.window.escape="$set('showDeleteModal', false)"
+            tabindex="0"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-modal-title"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs focus:outline-hidden"
+        >
             <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-2xl border border-zinc-200 dark:border-zinc-800">
                 <div class="flex items-center gap-3">
                     <div class="p-2.5 rounded-xl bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400">
@@ -376,7 +404,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-zinc-900 dark:text-zinc-100">Delete Article</h4>
+                        <h4 id="delete-modal-title" class="text-base font-bold text-zinc-900 dark:text-zinc-100">Delete Article</h4>
                         <p class="mt-1 text-xs text-zinc-500">
                             Are you sure you want to permanently remove this article and its vector embedding from PostgreSQL?
                         </p>

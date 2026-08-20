@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $article->title }} - Trade School Articles</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="min-h-full font-sans antialiased">
+<x-layouts::app.header :title="$article->title">
     <div class="max-w-4xl mx-auto px-4 py-12 sm:px-6 lg:px-8 space-y-10">
-        {{-- Navigation Header --}}
+        {{-- Navigation Breadcrumb --}}
         <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-4 text-sm">
-            <a href="{{ route('articles.index') }}" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline">
+            <a href="{{ route('articles.index') }}" class="inline-flex items-center gap-1.5 font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
                 &larr; Back to all articles
             </a>
             <span class="text-xs text-zinc-500 font-mono">
-                Indexed in PostgreSQL (pgvector)
+                PostgreSQL pgvector
             </span>
         </div>
 
@@ -79,7 +71,7 @@
             @if ($relatedArticles->isNotEmpty())
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     @foreach ($relatedArticles as $related)
-                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors duration-150">
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
@@ -114,5 +106,4 @@
             @endif
         </section>
     </div>
-</body>
-</html>
+</x-layouts::app.header>

@@ -38,8 +38,4 @@
         </flux:menu.radio.group>
     </flux:menu>
 </flux:dropdown>
-@else
-<a href="{{ route('login') }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition">
-    {{ __('Log in') }}
-</a>
 @endauth

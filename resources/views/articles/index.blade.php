@@ -1,33 +1,15 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trade School Articles - {{ config('app.name') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="min-h-full font-sans antialiased">
+<x-layouts::app.header :title="__('Trade School Articles')">
     <div class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8 space-y-8">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
-                <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    Browse articles with in-database vector recommendations powered by PostgreSQL & pgvector.
-                </p>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="{{ route('vector-lab') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-xs">
-                    <span>🔬 Try Live Vector Lab</span>
-                </a>
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white transition shadow-xs">
-                    &larr; Home
-                </a>
-            </div>
+        <div class="border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
+            <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Browse articles with in-database vector recommendations powered by PostgreSQL & pgvector.
+            </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse ($articles as $article)
-                <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col justify-between shadow-sm hover:shadow transition">
+                <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col justify-between shadow-sm hover:shadow transition-shadow duration-200">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300">
@@ -62,5 +44,4 @@
             {{ $articles->links() }}
         </div>
     </div>
-</body>
-</html>
+</x-layouts::app.header>

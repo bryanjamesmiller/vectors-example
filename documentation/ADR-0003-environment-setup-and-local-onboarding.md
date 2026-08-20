@@ -119,7 +119,9 @@ This runs all table migrations, enables the PostgreSQL `vector` extension, and p
 Visit the application in your browser (using `http://localhost:8000`, your Herd/Valet domain `http://<your-project>.test`, or your configured `APP_URL`):
 
 * **Landing Page:** `/` (e.g. `http://localhost:8000` or `http://vectors-example.test`)
-* **Knowledge Base:** `/articles` (e.g. `http://localhost:8000/articles`)
+* **Vector Lab (Interactive Playground):** `/vector-lab` (live embedding generation, microsecond telemetry, raw 512d matrix inspection, and in-database cosine proximity matching)
+* **Public Articles:** `/articles` (e.g. `http://localhost:8000/articles`)
+* **Dashboard & Article Manager:** `/dashboard` (CRUD management, vector status indicators, and on-demand re-embedding)
 * **Article & Related Recommendations:** Click any article (e.g. *"Personal Protective Equipment (PPE) Guidelines for Welding Labs"*).
   * At the bottom of the article, you will see the 3 related articles automatically matched via PostgreSQL cosine distance with their similarity match badges (e.g., `81% match`).
 
@@ -131,9 +133,9 @@ Visit the application in your browser (using `http://localhost:8000`, your Herd/
 | :--- | :--- |
 | `php artisan articles:re-embed --sync` | Re-generates 512d AI embeddings for all articles in the database using the active provider (Ollama or OpenAI). |
 | `php artisan articles:export-fixtures` | Exports all database articles and their 512d embeddings to `database/seeders/data/articles.json`. |
-| `php artisan test --compact` | Runs the 32-test Pest suite verifying vector geometry, observers, and hybrid filtering. |
+| `php artisan test --compact` | Runs the automated Pest suite verifying vector geometry, observers, and hybrid filtering. |
 | `./vendor/bin/pint --format agent` | Formats PHP code to project conventions. |
-| `./vendor/bin/phpstan analyse` | Runs PHPStan Level 8 static analysis. |
+| `./vendor/bin/phpstan analyse --level=8` | Runs PHPStan Level 8 static analysis. |
 
 ---
 

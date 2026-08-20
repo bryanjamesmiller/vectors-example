@@ -1,26 +1,18 @@
 <div class="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8">
     {{-- Header --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
-        <div>
-            <div class="flex items-center gap-2">
-                <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                    Interactive AI Vector Lab
-                </h1>
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
-                    <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Live Telemetry
-                </span>
-            </div>
-            <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
-                Test live AI embedding generation in real time, inspect raw 512-dimension vector representations, and observe native PostgreSQL <code class="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">pgvector</code> cosine distance (<code class="text-xs font-mono">&lt;=&gt;</code>) similarity queries.
-            </p>
+    <div class="border-b border-zinc-200 dark:border-zinc-800 pb-6">
+        <div class="flex items-center gap-2">
+            <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                Interactive AI Vector Lab
+            </h1>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Live Telemetry
+            </span>
         </div>
-
-        <div class="flex items-center gap-3">
-            <a href="{{ route('articles.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white transition shadow-xs">
-                &larr; View Articles
-            </a>
-        </div>
+        <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
+            Test live AI embedding generation in real time, inspect raw 512-dimension vector representations, and observe native PostgreSQL <code class="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded">pgvector</code> cosine distance (<code class="text-xs font-mono">&lt;=&gt;</code>) similarity queries.
+        </p>
     </div>
 
     {{-- Preset Scenarios --}}
@@ -112,7 +104,19 @@
                         ></textarea>
                     </div>
 
-                    <div class="pt-2 flex items-center justify-between">
+                    <div class="p-3.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-xs text-blue-900 dark:text-blue-200 leading-relaxed space-y-1">
+                        <div class="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300">
+                            <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            </svg>
+                            <span>Automatic In-Database Publishing</span>
+                        </div>
+                        <p>
+                            Calculating a vector generates the 512-dimension embedding and immediately creates and saves this article in the PostgreSQL database. It will appear at the top of the <a href="{{ route('articles.index') }}" target="_blank" class="underline font-semibold hover:text-blue-600">Articles</a> catalog and immediately participate in semantic recommendations using its vector!
+                        </p>
+                    </div>
+
+                    <div class="pt-2 flex flex-col gap-3">
                         <label class="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer">
                             <input wire:model="forceLiveCall" type="checkbox" class="rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500">
                             <span>Bypass Cache (Force Live API Call)</span>
@@ -121,15 +125,15 @@
                         <button
                             type="submit"
                             wire:loading.attr="disabled"
-                            class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-xs cursor-pointer"
+                            class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-xs cursor-pointer"
                         >
-                            <span wire:loading.remove>🚀 Calculate Vector</span>
+                            <span wire:loading.remove>🚀 Calculate Vector & Save Article</span>
                             <span wire:loading class="inline-flex items-center gap-1.5">
                                 <svg class="animate-spin size-4" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                 </svg>
-                                <span>Calling AI API...</span>
+                                <span>Generating Vector & Saving...</span>
                             </span>
                         </button>
                     </div>
@@ -142,12 +146,12 @@
             @if ($telemetry)
                 {{-- Live Telemetry Stats Bar --}}
                 <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                        <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3 gap-2">
+                        <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2 flex-wrap">
                             <span>2. Live AI Telemetry</span>
                             @if ($telemetry['is_cached'])
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                                    ⚡ Cached (0.25ms)
+                                    ⚡ Cached ({{ $telemetry['latency_ms'] }} ms)
                                 </span>
                             @else
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
@@ -156,7 +160,11 @@
                             @endif
                         </h3>
 
-                        <span class="text-xs font-mono text-zinc-500">{{ $telemetry['latency_ms'] }} ms roundtrip</span>
+                        <div class="flex items-center gap-3 text-xs font-mono text-zinc-500">
+                            <span class="truncate max-w-[200px]" title="{{ $telemetry['endpoint'] }}">{{ $telemetry['endpoint'] }}</span>
+                            <span>•</span>
+                            <span>{{ $telemetry['latency_ms'] }} ms roundtrip</span>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -198,12 +206,22 @@
 
                 {{-- Raw Vector Floats Matrix --}}
                 @if (!empty($generatedVector))
-                    <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-xs space-y-3">
+                    <div
+                        x-data="{ copied: false, fullVector: @js(json_encode($generatedVector)) }"
+                        class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-xs space-y-3"
+                    >
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                                 <span>3. Raw 512-Dimension Vector Output</span>
                             </h3>
-                            <span class="text-xs text-zinc-500">First 12 of 512 floats</span>
+                            <button
+                                type="button"
+                                @click="navigator.clipboard.writeText(fullVector).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition cursor-pointer"
+                            >
+                                <span x-show="!copied">📋 Copy Full 512d JSON</span>
+                                <span x-show="copied" class="text-emerald-600 dark:text-emerald-400 font-semibold" style="display: none;">✓ Copied to Clipboard!</span>
+                            </button>
                         </div>
 
                         <div class="p-3 rounded-xl bg-zinc-950 text-emerald-400 font-mono text-xs overflow-x-auto border border-zinc-800 leading-relaxed">
@@ -214,6 +232,15 @@
                             <span class="text-zinc-500">... +500 more dimensions</span>
                             ]
                         </div>
+
+                        <details class="text-xs group">
+                            <summary class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer select-none">
+                                ▶ View complete 512-dimension float array
+                            </summary>
+                            <div class="mt-2 p-3 rounded-xl bg-zinc-950 text-emerald-300 font-mono text-[11px] max-h-48 overflow-y-auto border border-zinc-800 leading-relaxed select-all">
+                                [{{ implode(', ', array_map(fn($v) => number_format($v, 6, '.', ''), $generatedVector)) }}]
+                            </div>
+                        </details>
                     </div>
 
                     {{-- In-Database Cosine Similarity Matches from PostgreSQL --}}
@@ -266,27 +293,32 @@
                             @endforelse
                         </div>
 
-                        {{-- Action: Publish to Knowledge Base --}}
-                        <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                            @if ($isPublished)
-                                <div class="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                        {{-- In-Database Status Banner --}}
+                        <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                            @if ($isDuplicateTitle)
+                                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+                                    <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                                     </svg>
-                                    <span>Published live to database!</span>
-                                    <a href="{{ route('articles.show', $publishedArticleSlug) }}" target="_blank" class="underline font-bold">
-                                        View Live Article &rarr;
-                                    </a>
+                                    <span>An article with this title already exists in the database. Vector telemetry calculated; change title to save as a new article.</span>
                                 </div>
                             @else
-                                <span class="text-xs text-zinc-500">Want to add this tested article to the live database?</span>
-                                <button
-                                    wire:click="publishArticle"
-                                    type="button"
-                                    class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-xs cursor-pointer"
+                                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
+                                    <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                    </svg>
+                                    <span>Article & 512d vector saved to PostgreSQL database!</span>
+                                </div>
+                            @endif
+                            @if ($publishedArticleSlug)
+                                <a
+                                    href="{{ route('articles.show', $publishedArticleSlug) }}"
+                                    target="_blank"
+                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition shrink-0"
                                 >
-                                    💾 Publish to Live Articles
-                                </button>
+                                    <span>View on Articles Page</span>
+                                    <span>&rarr;</span>
+                                </a>
                             @endif
                         </div>
                     </div>
