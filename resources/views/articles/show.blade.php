@@ -71,7 +71,7 @@
             @if ($relatedArticles->isNotEmpty())
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     @foreach ($relatedArticles as $related)
-                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors duration-150">
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">

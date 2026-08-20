@@ -23,12 +23,13 @@ The application is deployed live on **Laravel Cloud**:
 
 * **Interactive AI Vector Lab (`/vector-lab`):** An interactive playground to test live AI vector embeddings, inspect microsecond roundtrip latency, copy full 512d JSON matrices, and evaluate native PostgreSQL `<=>` cosine distance proximity rankings in real time.
 * **In-Database Vector Proximity (`pgvector`):** Uses native PostgreSQL vector cosine distance (`<=>`) with HNSW indexing for real-time, sub-millisecond semantic search and recommendations without external vector database dependencies.
-* **Dual-Engine AI Embeddings:**
+* **Dual-Engine & Configurable AI Embeddings:**
   * **Local Development (Default):** 100% free, offline, private embeddings powered by a local **Ollama** instance (`nomic-embed-text`).
-  * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, truncated to 512 Matryoshka dimensions).
-* **Articles & Vector Manager (`/dashboard`):** Full Livewire CRUD management with vector status indicators, mixed-case PostgreSQL search (`whereLike`), and on-demand re-embedding.
+  * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, truncated to 512 Matryoshka dimensions) with support for any OpenAI-compatible provider.
+* **SHA-256 Text Fingerprint Caching & Quota Protection:** Automatically fingerprints text inputs using SHA-256 hashes for `<1ms` cache hits, backed by per-IP rate limiting guards (15 req/min) on outbound live API calls.
+* **Articles & Vector Management:** Comprehensive Livewire article management with vector status indicators, mixed-case PostgreSQL search (`whereLike`), and on-demand background vector indexing.
 * **Deterministic Seeding & Caching:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning in milliseconds with zero network or AI model calls.
-* **Modern UI & Stack:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS.
+* **Unified Modern UI:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS with responsive, accessible navigation across desktop and mobile.
 * **Zero-Downtime Serverless Hosting:** Hosted on Laravel Cloud with Serverless Postgres (Dev configuration with Scale-to-Zero).
 
 ---

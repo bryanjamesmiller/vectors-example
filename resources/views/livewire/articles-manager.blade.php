@@ -268,7 +268,7 @@
     {{-- Create / Edit Article Modal --}}
     @if ($showArticleModal)
         <div
-            wire:keydown.escape="$set('showArticleModal', false)"
+            wire:keydown.window.escape="$set('showArticleModal', false)"
             tabindex="0"
             role="dialog"
             aria-modal="true"
@@ -389,7 +389,7 @@
     {{-- Delete Confirmation Modal --}}
     @if ($showDeleteModal)
         <div
-            wire:keydown.escape="$set('showDeleteModal', false)"
+            wire:keydown.window.escape="$set('showDeleteModal', false)"
             tabindex="0"
             role="dialog"
             aria-modal="true"

@@ -73,7 +73,7 @@ class EmbeddingService
             $cached = Cache::get($cacheKey);
             if (is_array($cached) && ! empty($cached)) {
                 $endTime = hrtime(true);
-                $latencyMs = max(0.01, round(($endTime - $startTime) / 1_000_000, 2));
+                $latencyMs = round(($endTime - $startTime) / 1_000_000, 3);
 
                 return [
                     'embedding' => $cached,
@@ -97,7 +97,13 @@ class EmbeddingService
                     'input' => $cleaned,
                     'dimensions' => $dimensions,
                 ]);
-            }, 500);
+            }, 500, function (Throwable $e): bool {
+                $msg = $e->getMessage();
+
+                return ! str_contains($msg, 'Incorrect API key')
+                    && ! str_contains($msg, 'invalid_api_key')
+                    && ! str_contains($msg, 'invalid_request_error');
+            });
 
             $endTime = hrtime(true);
             $latencyMs = round(($endTime - $startTime) / 1_000_000, 2);

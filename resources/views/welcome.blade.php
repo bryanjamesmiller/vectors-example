@@ -101,7 +101,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Pillar 1: PostgreSQL & pgvector -->
-                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors duration-150">
                         <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
@@ -114,7 +114,7 @@
                     </div>
 
                     <!-- Pillar 2: Pluggable AI Engine -->
-                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors duration-150">
                         <div class="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-950 text-violet-600 dark:text-violet-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -127,7 +127,7 @@
                     </div>
 
                     <!-- Pillar 3: SHA-256 Caching -->
-                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors duration-150">
                         <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -140,7 +140,7 @@
                     </div>
 
                     <!-- Pillar 4: Interactive Vector Lab & Management -->
-                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
+                    <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors duration-150">
                         <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
@@ -162,7 +162,7 @@
             <div>
                 &copy; {{ date('Y') }} Trade School AI. Built with Laravel 12, PostgreSQL 16 & pgvector.
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2">
                 <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Articles</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
                 <a href="https://github.com/bryanjamesmiller/vectors-example" target="_blank" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Repository</a>

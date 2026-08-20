@@ -27,21 +27,21 @@ While [ADR-0002](./ADR-0002-article-semantic-recommendations-via-vector-proximit
 * **In-Database Similarity Ranking:** Queries PostgreSQL using the \`<=>\` cosine distance operator to calculate percentage match scores:
   $$\\text{Match Percentage} = \\max(0, \\min(100, (1.0 - \\text{distance}) \\times 100))$$
 * **1-Click Publishing:** Allows saving the experiment directly to PostgreSQL as an active trade article.
-* **Live API Rate Limiting:** Enforces per-IP throttling (15 requests per minute) via \`RateLimiter::attempt()\` when users check "Bypass Cache".
+* **Live API Rate Limiting:** Enforces per-IP throttling (15 requests per minute) via `RateLimiter::attempt()` across all uncached outbound live API calls to protect provider quotas.
 
-### 2.2 Articles Manager Component (\`app/Livewire/ArticlesManager.php\`)
-* **Live CRUD Table:** Displays article titles, audiences, vector status badges (\`Indexed (512d)\` vs \`Pending Embedding\`), and publication states with Livewire pagination.
-* **PostgreSQL Case-Insensitive Search:** Uses Laravel's \`whereLike(..., caseSensitive: false)\` across title, summary, and content.
-* **On-Demand Re-Embedding:** Provides a 1-click button to re-dispatch \`GenerateArticleEmbeddingJob\` for any existing article.
+### 2.2 Articles Manager Component (`app/Livewire/ArticlesManager.php`)
+* **Live CRUD Table:** Displays article titles, audiences, vector status badges (`Indexed (512d)` vs `Pending Embedding`), and publication states with Livewire pagination.
+* **PostgreSQL Case-Insensitive Search:** Uses Laravel's `whereLike(..., caseSensitive: false)` across title, summary, and content.
+* **On-Demand Re-Embedding:** Provides a 1-click button to re-dispatch `GenerateArticleEmbeddingJob` for any existing article.
 * **Safe Public Navigation:** Renders disabled indicators for draft articles to eliminate 404 navigation errors.
-* **Accessible Modals:** Full dialog semantics (\`role="dialog"\`, \`aria-modal="true"\`, \`Escape\` key dismissal).
+* **Accessible Modals:** Full dialog semantics (`role="dialog"`, `aria-modal="true"`, `wire:keydown.window.escape` dismissal).
 
 ---
 
 ## 3. Verification & Testing
 
-* **Feature Tests (\`tests/Feature/VectorLabTest.php\`):**
-  * Verifies preset loading, vector calculation, telemetry capture, and 1-click publishing.
-* **Feature Tests (\`tests/Feature/ArticlesManagerTest.php\`):**
+* **Feature Tests (`tests/Feature/VectorLabTest.php`):**
+  * Verifies preset loading, vector calculation, microsecond telemetry capture, rate limiting, and 1-click publishing.
+* **Feature Tests (`tests/Feature/ArticlesManagerTest.php`):**
   * Verifies guest authentication barriers, metrics calculation, article creation, mixed-case search, and re-embedding job dispatch.
-* **Quality Standard:** Passed 100% with Laravel Pint, PHPStan Level 8 (0 errors), and Pest (45 tests, 117 assertions).
+* **Quality Standard:** Passed 100% with Laravel Pint, PHPStan Level 8 (0 errors), and the full Pest test suite.

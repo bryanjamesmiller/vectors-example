@@ -10,6 +10,7 @@ use App\Services\Ai\EmbeddingService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Title;
@@ -56,6 +57,8 @@ class VectorLab extends Component
     public bool $isPublished = false;
 
     public ?string $publishedArticleSlug = null;
+
+    public bool $isDuplicateTitle = false;
 
     /**
      * Presets available for 1-click testing.
@@ -114,6 +117,7 @@ class VectorLab extends Component
         $this->nearestMatches = [];
         $this->isPublished = false;
         $this->publishedArticleSlug = null;
+        $this->isDuplicateTitle = false;
     }
 
     /**
@@ -136,12 +140,18 @@ class VectorLab extends Component
         {$this->content}
         MARKDOWN;
 
-        if ($this->forceLiveCall) {
+        $model = (string) config('ai.embedding.model', 'nomic-embed-text');
+        $dimensions = (int) config('ai.embedding.dimensions', 512);
+        $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
+        $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+        $isCached = ! $this->forceLiveCall && Cache::has($cacheKey);
+
+        if (! $isCached) {
             $key = 'vector-lab-live:'.(request()->ip() ?? 'unknown');
             if (RateLimiter::tooManyAttempts($key, 15)) {
                 $seconds = RateLimiter::availableIn($key);
                 Flux::toast(
-                    text: __('Rate limit reached. Please wait :seconds seconds before forcing another live API call.', ['seconds' => $seconds]),
+                    text: __('Rate limit reached. Please wait :seconds seconds before requesting another live AI embedding.', ['seconds' => $seconds]),
                     variant: 'danger'
                 );
 
@@ -169,21 +179,60 @@ class VectorLab extends Component
         if (! empty($this->generatedVector)) {
             $this->calculateNearestNeighbors($this->generatedVector);
 
-            if ($telemetryResult['is_cached']) {
+            $existingArticle = Article::where('title', $this->title)->first();
+
+            if ($existingArticle) {
+                $this->isPublished = true;
+                $this->publishedArticleSlug = $existingArticle->slug;
+                $this->isDuplicateTitle = true;
+
                 Flux::toast(
-                    text: __('⚡ 512d vector resolved from cache in :ms ms (SHA-256 content-hash match).', [
-                        'ms' => $telemetryResult['latency_ms'],
+                    text: __('An article with the title ":title" already exists. Vector calculated, but please update the title before saving a new article.', [
+                        'title' => $this->title,
                     ]),
-                    variant: 'info'
+                    variant: 'warning'
                 );
             } else {
-                Flux::toast(
-                    text: __('🌐 Live 512d vector generated in :ms ms via :provider!', [
-                        'ms' => $telemetryResult['latency_ms'],
-                        'provider' => $telemetryResult['provider'],
-                    ]),
-                    variant: 'success'
-                );
+                $this->isDuplicateTitle = false;
+
+                $baseSlug = Str::slug($this->title);
+                $slug = $baseSlug;
+                $counter = 1;
+
+                while (Article::where('slug', $slug)->exists()) {
+                    $slug = "{$baseSlug}-{$counter}";
+                    $counter++;
+                }
+
+                $article = Article::create([
+                    'title' => $this->title,
+                    'slug' => $slug,
+                    'audience' => Audience::from($this->audience),
+                    'summary' => ! empty($this->summary) ? $this->summary : null,
+                    'content' => $this->content,
+                    'is_published' => true,
+                    'embedding' => new Vector($this->generatedVector),
+                ]);
+
+                $this->isPublished = true;
+                $this->publishedArticleSlug = $article->slug;
+
+                if ($telemetryResult['is_cached']) {
+                    Flux::toast(
+                        text: __('⚡ 512d vector resolved from cache in :ms ms and saved to Articles!', [
+                            'ms' => $telemetryResult['latency_ms'],
+                        ]),
+                        variant: 'success'
+                    );
+                } else {
+                    Flux::toast(
+                        text: __('🌐 Live 512d vector generated in :ms ms via :provider and saved to Articles!', [
+                            'ms' => $telemetryResult['latency_ms'],
+                            'provider' => $telemetryResult['provider'],
+                        ]),
+                        variant: 'success'
+                    );
+                }
             }
         } else {
             Flux::toast(

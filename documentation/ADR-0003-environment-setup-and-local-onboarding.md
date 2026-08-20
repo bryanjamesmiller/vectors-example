@@ -133,7 +133,7 @@ Visit the application in your browser (using `http://localhost:8000`, your Herd/
 | :--- | :--- |
 | `php artisan articles:re-embed --sync` | Re-generates 512d AI embeddings for all articles in the database using the active provider (Ollama or OpenAI). |
 | `php artisan articles:export-fixtures` | Exports all database articles and their 512d embeddings to `database/seeders/data/articles.json`. |
-| `php artisan test --compact` | Runs the 45-test Pest suite verifying vector geometry, observers, and hybrid filtering. |
+| `php artisan test --compact` | Runs the automated Pest suite verifying vector geometry, observers, and hybrid filtering. |
 | `./vendor/bin/pint --format agent` | Formats PHP code to project conventions. |
 | `./vendor/bin/phpstan analyse --level=8` | Runs PHPStan Level 8 static analysis. |
 

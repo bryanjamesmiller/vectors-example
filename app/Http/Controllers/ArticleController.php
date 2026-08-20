@@ -16,7 +16,8 @@ class ArticleController extends Controller
     {
         $articles = Article::query()
             ->where('is_published', true)
-            ->latest()
+            ->latest('created_at')
+            ->latest('id')
             ->paginate(9);
 
         return view('articles.index', [
