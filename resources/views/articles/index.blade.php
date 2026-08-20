@@ -26,6 +26,7 @@
                         type="text"
                         name="q"
                         value="{{ $search }}"
+                        aria-label="Search articles semantically"
                         placeholder="Search articles semantically (e.g. 'welding safety', 'conduit sizing')..."
                         class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 pl-10 pr-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                     />
@@ -84,7 +85,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                     </svg>
                     <span>
-                        Showing <strong>{{ $isVectorSearch ? 'AI vector similarity' : 'text keyword' }}</strong> search results for <strong>&ldquo;{{ $search }}&rdquo;</strong> ranked by nearest semantic proximity.
+                        Showing <strong>{{ $isVectorSearch ? 'AI vector similarity' : 'text keyword' }}</strong> search results for <strong>&ldquo;{{ $search }}&rdquo;</strong>{{ $isVectorSearch ? ' ranked by nearest semantic proximity.' : '.' }}
                     </span>
                 </div>
                 <a href="{{ route('articles.index') }}" class="underline font-semibold hover:text-blue-600 shrink-0">
@@ -132,11 +133,16 @@
                 </div>
             @empty
                 <div class="col-span-full py-12 text-center text-zinc-500 space-y-2">
-                    <p class="text-base font-medium text-zinc-700 dark:text-zinc-300">No articles matched your search query.</p>
-                    <p class="text-xs text-zinc-500">Try adjusting your keywords or clearing the search to browse all published articles.</p>
-                    <a href="{{ route('articles.index') }}" class="inline-block mt-3 px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
-                        Clear Search
-                    </a>
+                    @if ($search !== '')
+                        <p class="text-base font-medium text-zinc-700 dark:text-zinc-300">No articles matched your search query.</p>
+                        <p class="text-xs text-zinc-500">Try adjusting your keywords or clearing the search to browse all published articles.</p>
+                        <a href="{{ route('articles.index') }}" class="inline-block mt-3 px-4 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                            Clear Search
+                        </a>
+                    @else
+                        <p class="text-base font-medium text-zinc-700 dark:text-zinc-300">No published articles found.</p>
+                        <p class="text-xs text-zinc-500">Check back soon for new trade school articles and guides.</p>
+                    @endif
                 </div>
             @endforelse
         </div>

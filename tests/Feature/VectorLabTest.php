@@ -69,9 +69,44 @@ test('vector lab randomizeScenario action re-rolls fresh scenario', function () 
         ->assertSet('audience', 'teachers');
 });
 
+test('vector lab randomizeScenario falls back to curated scenario when rate limited', function () {
+    $key = 'vector-lab-scenario:127.0.0.1';
+    RateLimiter::clear($key);
+
+    for ($i = 0; $i < 10; $i++) {
+        RateLimiter::hit($key, 60);
+    }
+
+    $mockScenarioService = Mockery::mock(ScenarioService::class);
+    $mockScenarioService->shouldReceive('getRandomFallbackScenario')
+        ->once()
+        ->andReturn([
+            'title' => 'Fallback Scenario',
+            'audience' => 'students',
+            'summary' => 'Fallback summary',
+            'content' => 'Fallback content',
+        ]);
+    $mockScenarioService->shouldNotReceive('generateRandomScenario');
+
+    $this->app->instance(ScenarioService::class, $mockScenarioService);
+
+    Livewire::test(VectorLab::class)
+        ->assertSet('title', 'Fallback Scenario')
+        ->assertSet('audience', 'students');
+});
+
 test('ScenarioService getRandomFallbackScenario returns a valid scenario array', function () {
     $service = new ScenarioService;
     $scenario = $service->getRandomFallbackScenario();
+
+    expect($scenario)->toHaveKeys(['title', 'audience', 'summary', 'content'])
+        ->and($scenario['title'])->not->toBeEmpty()
+        ->and($scenario['content'])->not->toBeEmpty();
+});
+
+test('ScenarioService falls back when OpenAI is not configured', function () {
+    config(['openai.api_key' => null]);
+    $scenario = (new ScenarioService)->generateRandomScenario();
 
     expect($scenario)->toHaveKeys(['title', 'audience', 'summary', 'content'])
         ->and($scenario['title'])->not->toBeEmpty()

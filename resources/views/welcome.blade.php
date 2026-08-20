@@ -28,6 +28,7 @@
                             <input
                                 type="text"
                                 name="q"
+                                aria-label="Search trade school articles semantically"
                                 placeholder="Search trade school articles semantically..."
                                 class="w-full rounded-xl border-0 bg-transparent pl-11 pr-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-0 focus:outline-hidden"
                             />
