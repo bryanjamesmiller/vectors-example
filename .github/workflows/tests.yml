@@ -56,7 +56,9 @@ jobs:
           node-version: '22'
 
       - name: Setup Application
-        run: composer setup
+        run: |
+          PGPASSWORD=secret psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE vectors_postgres_testing;" || true
+          composer setup
 
       - name: Run CI Checks
         run: composer ci:check
