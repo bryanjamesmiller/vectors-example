@@ -31,6 +31,13 @@
 
             <nav class="flex items-center gap-3 sm:gap-4">
                 <a
+                    href="{{ route('vector-lab') }}"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-xs"
+                >
+                    <span>🔬 Try Live Vector Lab</span>
+                </a>
+
+                <a
                     href="{{ route('articles.index') }}"
                     class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium rounded-lg text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                 >

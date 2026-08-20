@@ -13,27 +13,75 @@ class EmbeddingService
     /**
      * Convert text into a 512-dimension float array using OpenAI embeddings with content-hash caching.
      *
-     * @return array<int, float>
+     * @return list<float>
      */
     public function generateEmbedding(string $text): array
     {
+        $result = $this->generateWithTelemetry($text);
+
+        return $result['embedding'];
+    }
+
+    /**
+     * Generate an embedding while capturing live provider, latency, and telemetry details.
+     *
+     * @return array{
+     *     embedding: list<float>,
+     *     provider: string,
+     *     model: string,
+     *     dimensions: int,
+     *     latency_ms: float,
+     *     is_cached: bool,
+     *     endpoint: string,
+     *     character_count: int,
+     *     error: ?string
+     * }
+     */
+    public function generateWithTelemetry(string $text, bool $bypassCache = false): array
+    {
         $cleaned = trim((string) preg_replace('/\s+/', ' ', $text));
-
-        if ($cleaned === '') {
-            return [];
-        }
-
         $model = (string) config('ai.embedding.model', 'text-embedding-3-small');
         $dimensions = (int) config('ai.embedding.dimensions', 512);
+        $baseUri = (string) (config('openai.base_uri') ?? 'https://api.openai.com/v1');
 
-        // Content-hash cache key incorporating model, dimensions, and text hash
+        $isOllama = str_contains($baseUri, 'localhost') || str_contains($baseUri, '11434') || str_contains($model, 'nomic');
+        $providerName = $isOllama ? 'Ollama (Local Offline AI)' : 'OpenAI API (Cloud)';
+
+        if ($cleaned === '') {
+            return [
+                'embedding' => [],
+                'provider' => $providerName,
+                'model' => $model,
+                'dimensions' => $dimensions,
+                'latency_ms' => 0.0,
+                'is_cached' => false,
+                'endpoint' => $baseUri,
+                'character_count' => 0,
+                'error' => 'Input text is empty.',
+            ];
+        }
+
         $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
 
-        /** @var array<int, float>|null $cached */
-        $cached = Cache::get($cacheKey);
-        if (is_array($cached) && ! empty($cached)) {
-            return $cached;
+        if (! $bypassCache) {
+            /** @var list<float>|null $cached */
+            $cached = Cache::get($cacheKey);
+            if (is_array($cached) && ! empty($cached)) {
+                return [
+                    'embedding' => $cached,
+                    'provider' => $providerName,
+                    'model' => $model,
+                    'dimensions' => count($cached),
+                    'latency_ms' => 0.25,
+                    'is_cached' => true,
+                    'endpoint' => $baseUri,
+                    'character_count' => mb_strlen($cleaned),
+                    'error' => null,
+                ];
+            }
         }
+
+        $startTime = hrtime(true);
 
         try {
             $response = OpenAI::embeddings()->create([
@@ -42,18 +90,43 @@ class EmbeddingService
                 'dimensions' => $dimensions,
             ]);
 
-            /** @var array<int, float> $embedding */
+            $endTime = hrtime(true);
+            $latencyMs = round(($endTime - $startTime) / 1_000_000, 2);
+
+            /** @var list<float> $embedding */
             $embedding = $response->embeddings[0]->embedding ?? [];
 
             if (! empty($embedding)) {
                 Cache::forever($cacheKey, $embedding);
             }
 
-            return $embedding;
+            return [
+                'embedding' => $embedding,
+                'provider' => $providerName,
+                'model' => $model,
+                'dimensions' => count($embedding),
+                'latency_ms' => $latencyMs,
+                'is_cached' => false,
+                'endpoint' => $baseUri,
+                'character_count' => mb_strlen($cleaned),
+                'error' => null,
+            ];
         } catch (Throwable $e) {
             report($e);
+            $endTime = hrtime(true);
+            $latencyMs = round(($endTime - $startTime) / 1_000_000, 2);
 
-            return [];
+            return [
+                'embedding' => [],
+                'provider' => $providerName,
+                'model' => $model,
+                'dimensions' => $dimensions,
+                'latency_ms' => $latencyMs,
+                'is_cached' => false,
+                'endpoint' => $baseUri,
+                'character_count' => mb_strlen($cleaned),
+                'error' => $e->getMessage(),
+            ];
         }
     }
 }
