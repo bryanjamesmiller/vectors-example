@@ -3,7 +3,7 @@
 * **Status:** Approved
 * **Date:** 2026-08-19
 * **Author:** Architecture & Engineering Team
-* **Target Stack:** PHP 8.4+, Laravel 12+, PostgreSQL with `pgvector` (512 dimensions), Blade / Livewire, Pest 5.x, PHPStan (Level 8)
+* **Target Stack:** PHP 8.3+ (Active runtime: PHP 8.5), Laravel 12+, PostgreSQL with `pgvector` (512 dimensions), Blade / Livewire, Pest 5.x, PHPStan (Level 8)
 
 ---
 

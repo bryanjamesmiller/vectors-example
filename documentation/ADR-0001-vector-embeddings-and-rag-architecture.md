@@ -2,7 +2,7 @@
 
 * **Status:** Accepted (2026-08-19)
 * **Author:** Architecture & Engineering Team
-* **Target Stack:** PHP 8.4+, Laravel 12+, PostgreSQL with `pgvector`, Filament 3.x, Ollama (`nomic-embed-text`) / OpenAI (`text-embedding-3-small`, `gpt-4o-mini`), Pest 5.x, PHPStan (Level 8)
+* **Target Stack:** PHP 8.3+ (Active runtime: PHP 8.5), Laravel 12+, PostgreSQL with `pgvector`, Filament 3.x, Ollama (`nomic-embed-text`) / OpenAI (`text-embedding-3-small`, `gpt-4o-mini`), Pest 5.x, PHPStan (Level 8)
 * **Related Records:**
   * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md) *(Foundational vector proximity layer)*
   * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./ADR-0003-environment-setup-and-local-onboarding.md) *(Environment, Docker pgvector, and Ollama setup)*
@@ -34,7 +34,7 @@ Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-ar
 
 | Component | Technology / Specification | Standard & Rationale |
 | :--- | :--- | :--- |
-| **Language & Runtime** | PHP `^8.4` | Strictly typed with `declare(strict_types=1);` and `CarbonImmutable`. |
+| **Language & Runtime** | PHP `^8.3` (8.3, 8.4, 8.5 supported) | Strictly typed with `declare(strict_types=1);` and `CarbonImmutable`. |
 | **Framework** | Laravel `12.x` / `13.x` | Standardized service architecture with queued background jobs. |
 | **Primary Database & Vectors** | PostgreSQL 16 + `pgvector` | `vector('embedding', 512)` with `USING hnsw (embedding vector_cosine_ops)`. |
 | **Domain Enums** | Backed Enums | `TradeProgram`, `PaymentType`, `PaymentStatus`, `EnrollmentStatus`. |

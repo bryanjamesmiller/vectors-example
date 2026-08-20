@@ -31,6 +31,16 @@ This document records the exact setup sequence, container requirements, configur
 
 ---
 
+## System Prerequisites & Compatibility
+
+* **PHP:** `^8.3` (Supports **PHP 8.3, 8.4, and 8.5**; active CI/dev runtime: `8.5`)
+* **Composer:** `v2.x`
+* **Node.js:** `v20.x` or `v22.x`
+* **Docker:** For running PostgreSQL + `pgvector` (`pgvector/pgvector:pg16`)
+* **Ollama (Optional for local AI):** For free, offline vector generation (`nomic-embed-text`)
+
+---
+
 ## Quick-Start Onboarding Runbook (5 Minutes)
 
 ### Step 1: Clone & Install Dependencies
