@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $article->title }} - Trade School Knowledge Base</title>
+    <title>{{ $article->title }} - Trade School Articles</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-full font-sans antialiased">
@@ -101,7 +101,7 @@
 
                             <div class="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800">
                                 <a href="{{ route('articles.show', $related) }}" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                                    Read guide &rarr;
+                                    Read article &rarr;
                                 </a>
                             </div>
                         </div>

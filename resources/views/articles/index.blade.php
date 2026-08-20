@@ -3,21 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trade School Knowledge Base - {{ config('app.name') }}</title>
+    <title>Trade School Articles - {{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-full font-sans antialiased">
     <div class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8 space-y-8">
-        <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6 gap-4">
             <div>
-                <h1 class="text-3xl font-bold tracking-tight">Trade School Knowledge Base</h1>
+                <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
                 <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    Browse guides for recruits, students, alumni, instructors, and staff.
+                    Browse articles with in-database vector recommendations powered by PostgreSQL & pgvector.
                 </p>
             </div>
-            <a href="{{ route('home') }}" class="text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">
-                &larr; Home
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('vector-lab') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-xs">
+                    <span>🔬 Try Live Vector Lab</span>
+                </a>
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white transition shadow-xs">
+                    &larr; Home
+                </a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

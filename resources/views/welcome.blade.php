@@ -24,39 +24,28 @@
                     </div>
                     <div>
                         <span class="font-bold text-base tracking-tight block leading-tight">Trade School AI</span>
-                        <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">pgvector • RAG • Multi-Tenant</span>
+                        <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">PostgreSQL • pgvector • Live AI Embeddings</span>
                     </div>
                 </a>
             </div>
 
             <nav class="flex items-center gap-3 sm:gap-4">
                 <a
-                    href="{{ route('articles.index') }}"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium rounded-lg text-zinc-700 dark:text-zinc-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                    href="{{ route('vector-lab') }}"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-xs"
                 >
-                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                    <span>Knowledge Base</span>
+                    <span>🔬 Try Live Vector Lab</span>
                 </a>
 
-                @if (Route::has('login'))
-                    @auth
-                        <a
-                            href="{{ route('dashboard') }}"
-                            class="inline-flex items-center px-4 py-1.5 text-sm font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-white transition shadow-sm"
-                        >
-                            Dashboard
-                        </a>
-                    @else
-                        <a
-                            href="{{ route('login') }}"
-                            class="inline-flex items-center px-3.5 py-1.5 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-600 transition"
-                        >
-                            Log in
-                        </a>
-                    @endauth
-                @endif
+                <a
+                    href="{{ route('articles.index') }}"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white transition shadow-xs"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>Articles</span>
+                </a>
             </nav>
         </div>
     </header>
@@ -67,7 +56,7 @@
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                     <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                    <span>PostgreSQL 16 + pgvector • Local AI & OpenAI • Multi-Tenant RAG</span>
+                    <span>PostgreSQL 16 + pgvector • Local Ollama AI & Production OpenAI • Real-Time Telemetry</span>
                 </div>
 
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-white max-w-4xl mx-auto leading-tight sm:leading-none">
@@ -75,7 +64,7 @@
                 </h1>
 
                 <p class="text-lg sm:text-xl text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-                    Empowering vocational institutions with high-speed in-database vector recommendations, multi-tenant AI assistants, and grounded RAG document querying.
+                    Empowering trade schools with high-speed in-database vector recommendations and transparent real-time AI embedding telemetry.
                 </p>
 
                 <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -83,9 +72,9 @@
                         href="{{ route('articles.index') }}"
                         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md hover:shadow-lg transition text-base"
                     >
-                        <span>Explore Knowledge Base</span>
+                        <span>Explore Articles</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                         </svg>
                     </a>
                     <a
@@ -98,16 +87,15 @@
             </div>
         </section>
 
-        <!-- Featured Showcase: Knowledge Base & Vector Recommendations -->
+        <!-- Featured Showcase: Articles & Vector Recommendations -->
         <section class="py-16 sm:py-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
                 <div class="text-center space-y-3 max-w-3xl mx-auto">
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Featured Knowledge Base</span>
                     <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
-                        Great Trade School Articles — Relevant for All Trade Schools!
+                        Articles for All Trade Schools with Semantic Vector Recommendations
                     </h2>
                     <p class="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed">
-                        A curated library of 18 generic trade guides spanning Welding, Electrical, HVAC, Lab Safety, Apprenticeships, and Financial Aid. Every guide leverages PostgreSQL cosine distance (<code class="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">&lt;=&gt;</code>) to automatically recommend the top related articles in <strong class="text-zinc-900 dark:text-white">&lt;2ms</strong> without external LLM runtime latency.
+                        A curated library of 18 trade articles spanning Welding, Electrical, HVAC, Lab Safety, Apprenticeships, and Financial Aid. Every article leverages PostgreSQL cosine distance (<code class="text-xs font-mono bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">&lt;=&gt;</code>) to automatically recommend the top related articles in <strong class="text-zinc-900 dark:text-white">&lt;2ms</strong> without external LLM runtime latency.
                     </p>
                 </div>
 
@@ -136,7 +124,7 @@
                     <div class="space-y-2 text-center md:text-left">
                         <h3 class="text-xl font-bold">Try the Vector Recommendation Demo</h3>
                         <p class="text-indigo-200 text-sm max-w-xl">
-                            Open any trade guide to see live semantic similarity percentage scores (e.g. <em>81% Semantic Match</em>) and toggle between "All Audiences" and "Same Audience" hybrid filtering.
+                            Open any article to see live semantic similarity percentage scores (e.g. <em>81% Semantic Match</em>) and toggle between "All Audiences" and "Same Audience" hybrid filtering.
                         </p>
                     </div>
                     <a
@@ -155,10 +143,10 @@
                 <div class="text-center space-y-3 max-w-3xl mx-auto">
                     <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">System Architecture & Tech Stack</span>
                     <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
-                        Engineered for High Performance, Security & Zero Lock-In
+                        How the In-Database AI & Vector Architecture Works
                     </h2>
                     <p class="text-zinc-600 dark:text-zinc-400 text-base">
-                        A modern Laravel 12 application running on PHP 8.5, uniting relational data integrity with AI vector capabilities.
+                        A modern Laravel 12 application running on PHP 8.5, combining PostgreSQL pgvector embeddings with flexible AI provider integration.
                     </p>
                 </div>
 
@@ -172,46 +160,46 @@
                         </div>
                         <h3 class="text-lg font-bold">PostgreSQL 16 & pgvector Engine</h3>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Vector embeddings live directly alongside traditional relational tables. Approximate Nearest Neighbor (ANN) search is powered by <strong>HNSW Cosine Distance indexes</strong> (<code class="text-xs font-mono">vector_cosine_ops</code>), eliminating the overhead of dedicated vector databases.
+                            Vector embeddings live directly alongside relational tables. Cosine distance (<code class="text-xs font-mono">&lt;=&gt;</code>) search runs natively inside PostgreSQL, eliminating the cost and latency of external vector databases like Pinecone.
                         </p>
                     </div>
 
-                    <!-- Pillar 2: Dual AI Engine -->
+                    <!-- Pillar 2: Pluggable AI Engine -->
                     <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
                         <div class="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-950 text-violet-600 dark:text-violet-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold">Dual-Engine AI (Ollama & OpenAI)</h3>
+                        <h3 class="text-lg font-bold">Pluggable AI Engine (Ollama, OpenAI & More)</h3>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Develop 100% free and offline on your machine using <strong>local Ollama</strong> with <code class="text-xs font-mono">nomic-embed-text</code> (512 dimensions), or seamlessly switch to cloud <strong>OpenAI</strong> (<code class="text-xs font-mono">text-embedding-3-small</code>) in production simply by toggling environment variables.
+                            Develop 100% free and offline on your machine using <strong>local Ollama</strong> (<code class="text-xs font-mono">nomic-embed-text</code>), and this app seamlessly switches to cloud <strong>OpenAI</strong> (<code class="text-xs font-mono">text-embedding-3-small</code>) in production. Because <code class="text-xs font-mono">EmbeddingService</code> connects to standard OpenAI-compatible endpoints, swapping to other providers (like Mistral or LocalAI) is 100% config-driven via <code class="text-xs font-mono">.env</code>.
                         </p>
                     </div>
 
-                    <!-- Pillar 3: SHA-256 Caching & JSON Fixtures -->
+                    <!-- Pillar 3: SHA-256 Caching -->
                     <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
                         <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold">Content-Hash Caching & Fixtures</h3>
+                        <h3 class="text-lg font-bold">SHA-256 Content-Hash Caching</h3>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Embeddings are cached using <strong>SHA-256 text fingerprinting</strong> so repeated documents resolve in <strong class="text-zinc-900 dark:text-white">0.1ms</strong> for $0.00. Pre-calculated vector fixtures in JSON allow <code class="text-xs font-mono">migrate:fresh --seed</code> to run in 10ms with zero network dependencies.
+                            Embeddings are cached using <strong>SHA-256 text fingerprinting</strong> so repeated text lookups resolve in <strong class="text-zinc-900 dark:text-white">&lt;1ms</strong> for $0.00, preventing duplicate API requests and unnecessary cloud billing.
                         </p>
                     </div>
 
-                    <!-- Pillar 4: Multi-Tenant Filament Backend -->
+                    <!-- Pillar 4: Interactive Vector Lab & Management -->
                     <div class="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition">
                         <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold">Filament 3 Multi-Tenant Assistant</h3>
+                        <h3 class="text-lg font-bold">Interactive Vector Lab & Management</h3>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            School administrators query student enrollments, fee schedules, and compliance policies via the <strong>Lumion AI Assistant</strong>. Queries are strictly scoped to the active tenant with deep links to Filament resource records.
+                            Test live embedding generation, inspect raw 512-dimension vector representations, evaluate real-time PostgreSQL similarity rankings, and manage published articles with full CRUD control.
                         </p>
                     </div>
                 </div>
@@ -226,7 +214,7 @@
                 &copy; {{ date('Y') }} Trade School AI. Built with Laravel 12, PostgreSQL 16 & pgvector.
             </div>
             <div class="flex items-center gap-4">
-                <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Knowledge Base</a>
+                <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Articles</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
                 <span class="font-mono">PHP 8.5</span>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
