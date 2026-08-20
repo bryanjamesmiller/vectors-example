@@ -46,7 +46,7 @@
 
         {{-- Related Articles Section (Vector Proximity via pgvector) --}}
         <section class="space-y-4 pt-4">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-bold flex items-center gap-2">
                         <span>Related Articles</span>
@@ -55,8 +55,24 @@
                         </span>
                     </h2>
                     <p class="text-xs text-zinc-500 mt-0.5">
-                        These 3 articles were selected dynamically based on cosine similarity of their 512-dimension vector embeddings.
+                        Selected dynamically based on cosine similarity of their 512-dimension vector embeddings.
                     </p>
+                </div>
+
+                {{-- Hybrid Filter Pills --}}
+                <div class="flex items-center gap-1.5 p-1 bg-zinc-200/70 dark:bg-zinc-800 rounded-lg text-xs self-start sm:self-auto">
+                    <a
+                        href="{{ route('articles.show', $article) }}"
+                        class="px-2.5 py-1 rounded-md font-medium transition {{ ! $filterByAudience ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900' }}"
+                    >
+                        All Audiences
+                    </a>
+                    <a
+                        href="{{ route('articles.show', [$article, 'filter_audience' => 1]) }}"
+                        class="px-2.5 py-1 rounded-md font-medium transition {{ $filterByAudience ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xs' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900' }}"
+                    >
+                        Same Audience ({{ ucfirst($article->audience->value) }})
+                    </a>
                 </div>
             </div>
 
@@ -66,7 +82,7 @@
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 flex flex-col justify-between shadow-xs hover:border-indigo-300 dark:hover:border-indigo-700 transition">
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-[11px] font-medium text-zinc-500">
+                                    <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                                         {{ ucfirst(str_replace('_', ' ', $related->audience->value)) }}
                                     </span>
                                     <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">
@@ -92,7 +108,9 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-xs text-zinc-500 italic">No related articles found.</p>
+                <div class="p-6 bg-zinc-100 dark:bg-zinc-900 rounded-xl text-center text-xs text-zinc-500">
+                    No related articles found for this audience filter.
+                </div>
             @endif
         </section>
     </div>

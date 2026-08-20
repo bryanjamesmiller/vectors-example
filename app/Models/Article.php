@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\Audience;
+use App\Observers\ArticleObserver;
 use Carbon\CarbonImmutable;
 use Database\Factories\ArticleFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +29,7 @@ use Pgvector\Laravel\Vector;
  * @property CarbonImmutable|null $created_at
  * @property CarbonImmutable|null $updated_at
  */
+#[ObservedBy(ArticleObserver::class)]
 class Article extends Model
 {
     /** @use HasFactory<ArticleFactory> */
@@ -62,17 +65,21 @@ class Article extends Model
      *
      * @return Collection<int, Article>
      */
-    public function relatedArticles(int $limit = 3): Collection
+    public function relatedArticles(int $limit = 3, ?Audience $audience = null): Collection
     {
         if (is_null($this->embedding)) {
             return new Collection;
         }
 
+        $query = $this->nearestNeighbors('embedding', Distance::Cosine)
+            ->where('is_published', true);
+
+        if ($audience) {
+            $query->where('audience', $audience);
+        }
+
         /** @var Collection<int, Article> $results */
-        $results = $this->nearestNeighbors('embedding', Distance::Cosine)
-            ->where('is_published', true)
-            ->take($limit)
-            ->get();
+        $results = $query->take($limit)->get();
 
         return $results;
     }

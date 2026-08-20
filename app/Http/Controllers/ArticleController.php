@@ -31,11 +31,15 @@ class ArticleController extends Controller
     {
         abort_if(! $article->is_published, 404);
 
-        $relatedArticles = $article->relatedArticles(3);
+        $filterByAudience = request()->boolean('filter_audience');
+        $audienceFilter = $filterByAudience ? $article->audience : null;
+
+        $relatedArticles = $article->relatedArticles(3, $audienceFilter);
 
         return view('articles.show', [
             'article' => $article,
             'relatedArticles' => $relatedArticles,
+            'filterByAudience' => $filterByAudience,
         ]);
     }
 }

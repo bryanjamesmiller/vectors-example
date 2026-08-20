@@ -21,7 +21,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach ($articles as $article)
+            @forelse ($articles as $article)
                 <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6 flex flex-col justify-between shadow-sm hover:shadow transition">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
@@ -46,7 +46,11 @@
                         </a>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-span-full py-12 text-center text-zinc-500">
+                    <p>No articles found in the database. Run <code>php artisan db:seed</code> to populate sample articles.</p>
+                </div>
+            @endforelse
         </div>
 
         <div class="pt-4">
