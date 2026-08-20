@@ -13,10 +13,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Pgvector\Laravel\Vector;
 
+/**
+ * @property-read bool $isCached
+ */
 #[Title('Interactive AI Vector Lab — Live Telemetry & Proximity Inspector')]
 class VectorLab extends Component
 {
@@ -121,6 +125,28 @@ class VectorLab extends Component
     }
 
     /**
+     * Determine whether an embedding is already cached for the current input.
+     */
+    #[Computed]
+    public function isCached(): bool
+    {
+        $summaryText = $this->summary ? "**Summary:** {$this->summary}\n\n" : '';
+        $textToEmbed = <<<MARKDOWN
+        # {$this->title}
+        **Target Audience:** {$this->audience}
+        {$summaryText}## Content
+        {$this->content}
+        MARKDOWN;
+
+        $model = (string) config('ai.embedding.model', 'nomic-embed-text');
+        $dimensions = (int) config('ai.embedding.dimensions', 512);
+        $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
+        $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+
+        return Cache::has($cacheKey);
+    }
+
+    /**
      * Generate embedding with live telemetry and execute in-database pgvector similarity query.
      */
     public function generateEmbedding(EmbeddingService $embeddingService): void
@@ -140,11 +166,8 @@ class VectorLab extends Component
         {$this->content}
         MARKDOWN;
 
-        $model = (string) config('ai.embedding.model', 'nomic-embed-text');
-        $dimensions = (int) config('ai.embedding.dimensions', 512);
-        $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
-        $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
-        $isCached = ! $this->forceLiveCall && Cache::has($cacheKey);
+        $forceLive = ! $this->isCached() || $this->forceLiveCall;
+        $isCached = ! $forceLive;
 
         if (! $isCached) {
             $key = 'vector-lab-live:'.(request()->ip() ?? 'unknown');
@@ -161,7 +184,7 @@ class VectorLab extends Component
             RateLimiter::hit($key, 60);
         }
 
-        $telemetryResult = $embeddingService->generateWithTelemetry($textToEmbed, $this->forceLiveCall);
+        $telemetryResult = $embeddingService->generateWithTelemetry($textToEmbed, $forceLive);
 
         $this->telemetry = [
             'provider' => $telemetryResult['provider'],

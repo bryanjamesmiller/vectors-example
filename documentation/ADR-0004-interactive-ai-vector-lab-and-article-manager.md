@@ -1,4 +1,4 @@
-# ADR 0004: Interactive AI Vector Lab & Dashboard Articles Management
+# ADR 0004: Interactive AI Vector Lab & In-Database Persistence
 
 * **Status:** Accepted (2026-08-20)
 * **Author:** Architecture & Engineering Team

@@ -27,7 +27,7 @@ The application is deployed live on **Laravel Cloud**:
   * **Local Development (Default):** 100% free, offline, private embeddings powered by a local **Ollama** instance (`nomic-embed-text`).
   * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, truncated to 512 Matryoshka dimensions) with support for any OpenAI-compatible provider.
 * **SHA-256 Text Fingerprint Caching & Quota Protection:** Automatically fingerprints text inputs using SHA-256 hashes for `<1ms` cache hits, backed by per-IP rate limiting guards (15 req/min) on outbound live API calls.
-* **Articles & Vector Management:** Comprehensive Livewire article management with vector status indicators, mixed-case PostgreSQL search (`whereLike`), and on-demand background vector indexing.
+* **Automatic Vector Persistence & Publishing:** Calculating vectors in the Vector Lab automatically creates and persists articles directly to PostgreSQL, immediately displaying them in the public Articles catalog and indexing them for semantic recommendations.
 * **Deterministic Seeding & Caching:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning in milliseconds with zero network or AI model calls.
 * **Unified Modern UI:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS with responsive, accessible navigation across desktop and mobile.
 * **Zero-Downtime Serverless Hosting:** Hosted on Laravel Cloud with Serverless Postgres (Dev configuration with Scale-to-Zero).
@@ -132,4 +132,4 @@ For deep dives into design decisions, vector indexing trade-offs, and schema arc
 * [ADR-0001: Multi-Tenant AI Assistant & Document RAG Architecture](./documentation/ADR-0001-vector-embeddings-and-rag-architecture.md)
 * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](./documentation/ADR-0002-article-semantic-recommendations-via-vector-proximity.md)
 * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./documentation/ADR-0003-environment-setup-and-local-onboarding.md)
-* [ADR-0004: Interactive AI Vector Lab & Dashboard Articles Management](./documentation/ADR-0004-interactive-ai-vector-lab-and-article-manager.md)
+* [ADR-0004: Interactive AI Vector Lab & In-Database Persistence](./documentation/ADR-0004-interactive-ai-vector-lab-and-article-manager.md)

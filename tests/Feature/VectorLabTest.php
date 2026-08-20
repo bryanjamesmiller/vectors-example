@@ -7,6 +7,7 @@ use App\Livewire\VectorLab;
 use App\Models\Article;
 use App\Services\Ai\EmbeddingService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
 use Pgvector\Laravel\Vector;
@@ -233,4 +234,29 @@ test('calculating vector for an article with an existing title does not create d
         ->assertSet('isPublished', true);
 
     expect(Article::where('title', 'Duplicate Prevention Test Guide')->count())->toBe(1);
+});
+
+test('dynamic cache checkbox reflects whether text is cached or requires live api call', function () {
+    Cache::flush();
+
+    Livewire::test(VectorLab::class)
+        ->set('title', 'Brand New Uncached Title')
+        ->set('content', 'Brand new uncached content.')
+        ->assertSee('Live AI API Call Required')
+        ->assertSee('New / Uncached Content');
+
+    $model = (string) config('ai.embedding.model', 'nomic-embed-text');
+    $dimensions = (int) config('ai.embedding.dimensions', 512);
+    $textToEmbed = "# Cached Title\n**Target Audience:** students\n## Content\nCached content.";
+    $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
+    $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+    Cache::put($cacheKey, array_fill(0, 512, 0.01), 3600);
+
+    Livewire::test(VectorLab::class)
+        ->set('title', 'Cached Title')
+        ->set('audience', 'students')
+        ->set('summary', '')
+        ->set('content', 'Cached content.')
+        ->assertSee('Bypass Cache')
+        ->assertSee('Cached Embedding Available');
 });
