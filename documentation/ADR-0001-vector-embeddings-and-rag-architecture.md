@@ -25,7 +25,7 @@ Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-ar
 1. **Multi-Tenant Vector Isolation:** 512-dimension vector embeddings stored in PostgreSQL via `pgvector`, hard-scoped by `school_id` and indexed with HNSW cosine distance indexes.
 2. **Polymorphic Chunk Ingestion:** Domain records (`Student`, `ManualPayment`, `CompliancePolicy`) are automatically formatted as structured Markdown summaries and embedded asynchronously on change.
 3. **Hybrid In-Database Retrieval:** Combines relational SQL tenant constraints (`WHERE school_id = ?`) with native `<=>` vector cosine similarity queries.
-4. **Strictly-Grounded LLM Synthesis:** Assembles retrieved tenant records into a constrained prompt passed to an LLM (`gpt-4o-mini` / local LLM), producing factual, hallucination-free answers with direct record citations.
+4. **Context-Grounded LLM Synthesis:** Assembles retrieved tenant records into a constrained prompt passed to an LLM (`gpt-4o-mini` / local LLM), mitigating hallucination risks and returning direct record citations.
 5. **Filament 3 Native Assistant Panel:** Provides school administrators with an embedded interactive assistant widget featuring prompt pills, real-time responses, and direct deep-links to administrative resource pages.
 
 ---
@@ -39,7 +39,7 @@ Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-ar
 | **Primary Database & Vectors** | PostgreSQL 16 + `pgvector` | `vector('embedding', 512)` with `USING hnsw (embedding vector_cosine_ops)`. |
 | **Domain Enums** | Backed Enums | `TradeProgram`, `PaymentType`, `PaymentStatus`, `EnrollmentStatus`. |
 | **AI Embedding Engine** | Dual-Engine Provider | Local **Ollama** (`nomic-embed-text`) for dev; Cloud **OpenAI** for production. |
-| **LLM Synthesis Model** | `gpt-4o-mini` | Low temperature (`0.1`) for deterministic factual context grounding. |
+| **LLM Synthesis Model** | `gpt-4o-mini` | Low temperature (`0.1`) with strict context grounding to minimize hallucination risks. |
 | **Admin Panel UI** | Filament `3.x` | Livewire 3 + Tailwind CSS embedded assistant widgets. |
 | **Testing & Quality** | Pest PHP & PHPStan | Comprehensive feature tests, PHPStan Level 8, and Laravel Pint. |
 
@@ -119,12 +119,12 @@ All domain models use strictly typed backed enums to ensure data integrity acros
 // app/Enums/TradeProgram.php
 enum TradeProgram: string
 {
-    case Electrical = 'electrical';
-    case Welding = 'welding';
-    case Hvac = 'hvac';
-    case Plumbing = 'plumbing';
-    case Automotive = 'automotive';
-    case Carpentry = 'carpentry';
+    case Electrical = 'Electrical';
+    case Welding = 'Welding';
+    case Hvac = 'HVAC';
+    case Plumbing = 'Plumbing';
+    case Automotive = 'Automotive';
+    case Carpentry = 'Carpentry';
 }
 
 // app/Enums/PaymentType.php
@@ -179,7 +179,7 @@ Schema::create('school_document_embeddings', function (Blueprint $table) {
 
     $table->timestamps();
 
-    $table->index(['school_id', 'documentable_type']);
+    $table->unique(['school_id', 'documentable_type', 'documentable_id'], 'school_doc_embeddings_unique');
 });
 
 if (DB::getDriverName() === 'pgsql') {
@@ -273,11 +273,12 @@ class IndexSchoolRecordForRagAction
 
 ### 4.4 Tenant-Scoped RAG Search Service
 
-Executes hybrid search ensuring **100% strict multi-tenant isolation** by combining `where('school_id', $schoolId)` with vector proximity:
+Executes hybrid search ensuring **defense-in-depth multi-tenant isolation** by binding queries strictly to an authorized `School` tenant model:
 
 ```php
 namespace App\Services\Ai;
 
+use App\Models\School;
 use App\Models\SchoolDocumentEmbedding;
 use Illuminate\Database\Eloquent\Collection;
 use Pgvector\Laravel\Vector;
@@ -287,11 +288,11 @@ class RagSearchService
     public function __construct(protected EmbeddingService $embeddingService) {}
 
     /**
-     * Search nearest document chunks strictly scoped to a specific school tenant.
+     * Search nearest document chunks strictly scoped to an authorized school tenant.
      *
      * @return Collection<int, SchoolDocumentEmbedding>
      */
-    public function search(int $schoolId, string $query, int $limit = 5): Collection
+    public function search(School $school, string $query, int $limit = 5): Collection
     {
         $queryVector = $this->embeddingService->generateEmbedding($query);
         if (empty($queryVector)) {
@@ -300,7 +301,7 @@ class RagSearchService
 
         /** @var Collection<int, SchoolDocumentEmbedding> $results */
         $results = SchoolDocumentEmbedding::query()
-            ->where('school_id', $schoolId)
+            ->where('school_id', $school->id)
             ->orderByRaw('embedding <=> ?', [new Vector($queryVector)])
             ->limit($limit)
             ->get();
@@ -320,6 +321,7 @@ Answers administrative inquiries using retrieved records as strict context bound
 namespace App\Services\Ai;
 
 use App\Models\School;
+use App\Models\SchoolDocumentEmbedding;
 use OpenAI\Laravel\Facades\OpenAI;
 
 class SchoolAiAssistantService
@@ -333,7 +335,7 @@ class SchoolAiAssistantService
      */
     public function ask(School $school, string $question): array
     {
-        $matchedChunks = $this->ragSearchService->search($school->id, $question, limit: 5);
+        $matchedChunks = $this->ragSearchService->search($school, $question, limit: 5);
 
         if ($matchedChunks->isEmpty()) {
             return [
@@ -387,10 +389,12 @@ class SchoolAiAssistantService
 
 ## 5. Security, Multi-Tenancy, and Isolation Guarantees
 
-1. **Guaranteed Tenant Partitioning:**
-   * In-database vector search enforces `WHERE school_id = :current_school_id` on every query.
-   * School A administrators can **never** retrieve or leak School B embeddings, records, or policy documents.
-2. **Deterministic Context Grounding:**
-   * LLM temperature is locked at `0.1` to prevent hallucinations and strictly enforce record-derived answers.
-3. **ACID-Compliant Single-Engine Storage:**
-   * Relational data and vector embeddings live side-by-side in PostgreSQL. Cascade deletes on `School` or `Student` automatically remove corresponding embeddings with full referential integrity.
+1. **Two-Layer Defense-in-Depth Tenant Isolation:**
+   * **Application / Authorization Layer:** The active `School` tenant model is resolved strictly from the authenticated session context (via `Filament::getTenant()` and guarded by `TenantMiddleware` / Laravel Policies). Untrusted client request inputs are never used to determine tenant scoping.
+   * **Database / Partitioning Layer:** Vector queries are hard-scoped via `WHERE school_id = $school->id` combined with the composite unique index `['school_id', 'documentable_type', 'documentable_id']`. School A administrators can **never** retrieve or leak School B embeddings, records, or policy documents.
+2. **Context Grounding & Hallucination Mitigation:**
+   * LLM temperature is locked at `0.1` with strict negative constraints ("If not found in context, state: 'I could not find records...'") to minimize hallucination risks and anchor answers directly in school records.
+3. **Single-Engine Storage & Lifecycle Cleanup:**
+   * Relational data and vector embeddings live side-by-side in PostgreSQL.
+   * Deleting a `School` cascades its embeddings automatically through the `school_id` foreign key.
+   * Deleting a polymorphic entity (`Student`, `ManualPayment`) triggers application-level cleanup via model observers to purge corresponding embeddings and prevent orphaned vectors.
