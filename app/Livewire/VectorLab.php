@@ -205,16 +205,36 @@ class VectorLab extends Component
             $existingArticle = Article::where('title', $this->title)->first();
 
             if ($existingArticle) {
+                Article::withoutEvents(function () use ($existingArticle): void {
+                    $existingArticle->update([
+                        'audience' => Audience::from($this->audience),
+                        'summary' => ! empty($this->summary) ? $this->summary : null,
+                        'content' => $this->content,
+                        'is_published' => true,
+                        'embedding' => new Vector($this->generatedVector),
+                    ]);
+                });
+
                 $this->isPublished = true;
                 $this->publishedArticleSlug = $existingArticle->slug;
                 $this->isDuplicateTitle = true;
 
-                Flux::toast(
-                    text: __('An article with the title ":title" already exists. Vector calculated, but please update the title before saving a new article.', [
-                        'title' => $this->title,
-                    ]),
-                    variant: 'warning'
-                );
+                if ($telemetryResult['is_cached']) {
+                    Flux::toast(
+                        text: __('⚡ 512d vector resolved from cache in :ms ms (Article already exists)', [
+                            'ms' => $telemetryResult['latency_ms'],
+                        ]),
+                        variant: 'success'
+                    );
+                } else {
+                    Flux::toast(
+                        text: __('🌐 Live 512d vector generated in :ms ms via :provider (Article already exists)', [
+                            'ms' => $telemetryResult['latency_ms'],
+                            'provider' => $telemetryResult['provider'],
+                        ]),
+                        variant: 'success'
+                    );
+                }
             } else {
                 $this->isDuplicateTitle = false;
 
@@ -227,7 +247,7 @@ class VectorLab extends Component
                     $counter++;
                 }
 
-                $article = Article::create([
+                $article = Article::withoutEvents(fn (): Article => Article::create([
                     'title' => $this->title,
                     'slug' => $slug,
                     'audience' => Audience::from($this->audience),
@@ -235,7 +255,7 @@ class VectorLab extends Component
                     'content' => $this->content,
                     'is_published' => true,
                     'embedding' => new Vector($this->generatedVector),
-                ]);
+                ]));
 
                 $this->isPublished = true;
                 $this->publishedArticleSlug = $article->slug;

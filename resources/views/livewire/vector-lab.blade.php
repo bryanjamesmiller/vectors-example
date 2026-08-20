@@ -303,11 +303,11 @@
                         {{-- In-Database Status Banner --}}
                         <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
                             @if ($isDuplicateTitle)
-                                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+                                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
                                     <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                     </svg>
-                                    <span>An article with this title already exists in the database. Vector telemetry calculated; change title to save as a new article.</span>
+                                    <span>Article already exists in PostgreSQL database!</span>
                                 </div>
                             @else
                                 <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
