@@ -17,11 +17,8 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <a href="{{ route('articles.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-750 transition shadow-xs">
-                &larr; Articles
-            </a>
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 transition shadow-xs">
-                Admin Dashboard
+            <a href="{{ route('articles.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white transition shadow-xs">
+                &larr; View Articles
             </a>
         </div>
     </div>

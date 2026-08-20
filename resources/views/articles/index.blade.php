@@ -19,7 +19,7 @@
                 <a href="{{ route('vector-lab') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-xs">
                     <span>🔬 Try Live Vector Lab</span>
                 </a>
-                <a href="{{ route('home') }}" class="text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200">
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white transition shadow-xs">
                     &larr; Home
                 </a>
             </div>
