@@ -1,14 +1,22 @@
 ---
 name: ship
 description: >-
-  Runs formatters (Pint), linters/static analysis (Larastan/PHPStan), and Pest tests,
-  auto-fixes any detected errors, verifies work, stages and commits code, and creates or
-  updates a GitHub Pull Request with a structured technical summary and proof.
+  Use ONLY when the user explicitly triggers /ship. Runs formatters (Pint),
+  linters/static analysis (Larastan/PHPStan), and Pest tests, auto-fixes any detected errors,
+  verifies work, stages and commits code, and creates or updates a GitHub Pull Request
+  with a structured technical summary and proof.
 ---
 
 # Ship Workflow Runbook
 
-Execute the following phases sequentially. If any step fails and cannot be automatically resolved after 3 attempts, halt and report to the user.
+> [!IMPORTANT]
+> **HIGH PRIORITY INVOCATION GUARDRAIL:**
+> The AI agent MUST NOT execute any of the activities in this `/ship` command (formatting, static analysis, running test suites, staging, committing, pushing code, or creating/updating PRs) autonomously, proactively, or as a side-effect of other work.
+> You must ONLY perform this workflow when the user specifically, intentionally, and explicitly types `/ship` in a prompt (or explicitly requests to ship the current branch). Do not commit, push, or run shipping checks unless and until the user is specifically ready and explicitly requests it.
+
+---
+
+Execute the following phases sequentially once explicitly invoked by `/ship`. If any step fails and cannot be automatically resolved after 3 attempts, halt and report to the user.
 
 ---
 
