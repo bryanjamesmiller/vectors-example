@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,10 +19,14 @@ return new class extends Migration
             $table->foreignId('school_id')->constrained()->cascadeOnDelete();
             $table->morphs('documentable'); // morphs to Student, ManualPayment, CompliancePolicy
             $table->text('content_chunk');
-            $table->jsonb('metadata')->nullable();
 
-            // 512-dimension vector column
-            $table->vector('embedding', 512);
+            if (DB::getDriverName() === 'pgsql') {
+                $table->jsonb('metadata')->nullable();
+                $table->vector('embedding', 512);
+            } else {
+                $table->json('metadata')->nullable();
+                $table->json('embedding')->nullable();
+            }
 
             $table->timestamps();
 

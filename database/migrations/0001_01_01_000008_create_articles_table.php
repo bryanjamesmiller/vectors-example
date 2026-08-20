@@ -23,8 +23,11 @@ return new class extends Migration
             $table->longText('content');
             $table->boolean('is_published')->default(true)->index();
 
-            // 512-dimension vector column
-            $table->vector('embedding', 512)->nullable();
+            if (DB::getDriverName() === 'pgsql') {
+                $table->vector('embedding', 512)->nullable();
+            } else {
+                $table->json('embedding')->nullable();
+            }
 
             $table->timestamps();
         });
