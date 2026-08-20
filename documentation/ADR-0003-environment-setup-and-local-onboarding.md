@@ -70,8 +70,10 @@ docker run -d \
   -p 5432:5432 \
   pgvector/pgvector:pg16
 
-# Create dedicated testing database (so running tests never wipes your dev data):
-docker exec pgvector-db psql -U postgres -c "CREATE DATABASE vectors_postgres_testing;" || true
+# Wait for PostgreSQL to be ready, then provision the dedicated testing database:
+until docker exec pgvector-db pg_isready -U postgres >/dev/null 2>&1; do sleep 1; done
+docker exec pgvector-db psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname = 'vectors_postgres_testing'" | grep -q 1 \
+  || docker exec pgvector-db createdb -U postgres vectors_postgres_testing
 ```
 
 *(If the container is already created, start it with `docker start pgvector-db`.)*

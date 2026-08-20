@@ -57,7 +57,7 @@ jobs:
 
       - name: Setup Application
         run: |
-          PGPASSWORD=secret psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE vectors_postgres_testing;" || true
+          PGPASSWORD=secret psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE vectors_postgres_testing;"
           composer setup
 
       - name: Run CI Checks
