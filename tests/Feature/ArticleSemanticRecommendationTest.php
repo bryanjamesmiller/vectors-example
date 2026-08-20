@@ -59,9 +59,9 @@ test('homepage renders hero semantic search bar and quick search pills', functio
 
     $response->assertOk()
         ->assertSee('Semantic Search')
-        ->assertSee('underwater welding')
-        ->assertSee('solar grants')
-        ->assertSee('electrical exam');
+        ->assertSee('Underwater Welding')
+        ->assertSee('Solar Apprenticeship Grants')
+        ->assertSee('Journeyman Electrical Exam');
 });
 
 test('articles index page renders successfully with seeded articles', function () {

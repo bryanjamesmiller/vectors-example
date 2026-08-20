@@ -18,7 +18,7 @@
 
                 {{-- Hero Semantic Vector Search Bar --}}
                 <div class="pt-2 max-w-2xl mx-auto w-full">
-                    <form method="GET" action="{{ route('articles.index') }}" class="relative flex flex-col sm:flex-row gap-2.5 p-2 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-lg shadow-zinc-200/50 dark:shadow-none">
+                    <form method="GET" action="{{ route('articles.index') }}" class="relative flex flex-col sm:flex-row gap-2.5 p-2 rounded-2xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-900/10 dark:ring-white/10" style="box-shadow: 0 -4px 20px -2px rgba(0, 0, 0, 0.09), 0 12px 28px -4px rgba(0, 0, 0, 0.15);">
                         <div class="relative flex-1 flex items-center">
                             <div class="pointer-events-none absolute left-3.5 text-zinc-400">
                                 <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -28,7 +28,7 @@
                             <input
                                 type="text"
                                 name="q"
-                                placeholder="Search trade curricula semantically (e.g. 'how to size conduit', 'welding safety')..."
+                                placeholder="Search trade school articles semantically..."
                                 class="w-full rounded-xl border-0 bg-transparent pl-11 pr-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-0 focus:outline-hidden"
                             />
                         </div>
@@ -44,19 +44,19 @@
                     </form>
 
                     {{-- Sample Search Query Pills --}}
-                    <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                    <div class="mt-3 flex flex-wrap items-center justify-center gap-2.5 text-xs text-zinc-500 dark:text-zinc-400">
                         <span class="font-medium text-zinc-600 dark:text-zinc-300">Try searching:</span>
-                        <a href="{{ route('articles.index', ['q' => 'underwater welding safety']) }}" class="px-2.5 py-1 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 hover:text-indigo-600 transition shadow-2xs">
-                            ⚡ underwater welding
+                        <a href="{{ route('articles.index', ['q' => 'underwater welding safety']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs">
+                            <span>🤿</span>
+                            <span>Underwater Welding</span>
                         </a>
-                        <a href="{{ route('articles.index', ['q' => 'electrical master exam tactics']) }}" class="px-2.5 py-1 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 hover:text-indigo-600 transition shadow-2xs">
-                            ⚡ electrical exam
+                        <a href="{{ route('articles.index', ['q' => 'electrical master exam tactics']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs">
+                            <span>⚡</span>
+                            <span>Journeyman Electrical Exam</span>
                         </a>
-                        <a href="{{ route('articles.index', ['q' => 'solar photovoltaic apprenticeship grants']) }}" class="px-2.5 py-1 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 hover:text-indigo-600 transition shadow-2xs">
-                            ⚡ solar grants
-                        </a>
-                        <a href="{{ route('articles.index', ['q' => 'workshop chemical splash response']) }}" class="px-2.5 py-1 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 hover:text-indigo-600 transition shadow-2xs">
-                            ⚡ eye wash safety
+                        <a href="{{ route('articles.index', ['q' => 'solar photovoltaic apprenticeship grants']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs">
+                            <span>☀️</span>
+                            <span>Solar Apprenticeship Grants</span>
                         </a>
                     </div>
                 </div>

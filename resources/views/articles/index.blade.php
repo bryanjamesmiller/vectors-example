@@ -14,7 +14,7 @@
         </div>
 
         {{-- Semantic Vector Search Bar --}}
-        <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
             <form method="GET" action="{{ route('articles.index') }}" class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
@@ -26,7 +26,7 @@
                         type="text"
                         name="q"
                         value="{{ $search }}"
-                        placeholder="Search semantically (e.g., 'hyperbaric pressure testing', 'electrical code exam', 'FAFSA grant aid')..."
+                        placeholder="Search articles semantically (e.g. 'welding safety', 'conduit sizing')..."
                         class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 pl-10 pr-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
                     />
                 </div>
@@ -56,11 +56,22 @@
                     <span class="inline-block size-2 rounded-full bg-emerald-500"></span>
                     <span>In-database 512d pgvector similarity query (<code>&lt;=&gt;</code> cosine distance)</span>
                 </div>
-                <div class="flex items-center gap-1.5">
+                <div class="flex flex-wrap items-center gap-2">
                     <span>Try:</span>
-                    <a href="{{ route('articles.index', ['q' => 'underwater welding safety']) }}" class="underline hover:text-blue-600">underwater welding</a> &bull;
-                    <a href="{{ route('articles.index', ['q' => 'solar clean energy grants']) }}" class="underline hover:text-blue-600">solar grants</a> &bull;
-                    <a href="{{ route('articles.index', ['q' => 'workshop chemical eye wash']) }}" class="underline hover:text-blue-600">eye wash safety</a>
+                    <a href="{{ route('articles.index', ['q' => 'underwater welding safety']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span>🤿</span>
+                        <span class="underline">underwater welding</span>
+                    </a>
+                    <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
+                    <a href="{{ route('articles.index', ['q' => 'electrical master exam tactics']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span>⚡</span>
+                        <span class="underline">electrical exam</span>
+                    </a>
+                    <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
+                    <a href="{{ route('articles.index', ['q' => 'solar photovoltaic apprenticeship grants']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span>☀️</span>
+                        <span class="underline">solar grants</span>
+                    </a>
                 </div>
             </div>
         </div>
