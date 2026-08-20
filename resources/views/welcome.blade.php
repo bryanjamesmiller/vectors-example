@@ -13,24 +13,75 @@
                 </h1>
 
                 <p class="text-lg sm:text-xl text-zinc-600 dark:text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-                    Empowering trade schools with high-speed in-database vector recommendations and transparent real-time AI embedding telemetry.
+                    Empowering trade schools with high-speed in-database vector recommendations, natural language semantic search, and transparent real-time AI embedding telemetry.
                 </p>
 
-                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                {{-- Hero Semantic Vector Search Bar --}}
+                <div class="pt-2 max-w-2xl mx-auto w-full">
+                    <form method="GET" action="{{ route('articles.index') }}" class="relative flex flex-col sm:flex-row gap-2.5 p-2 rounded-2xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-900/10 dark:ring-white/10" style="box-shadow: 0 -4px 20px -2px rgba(0, 0, 0, 0.09), 0 12px 28px -4px rgba(0, 0, 0, 0.15);">
+                        <div class="relative flex-1 flex items-center">
+                            <div class="pointer-events-none absolute left-3.5 text-zinc-400">
+                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                name="q"
+                                placeholder="Search trade school articles semantically..."
+                                class="w-full rounded-xl border-0 bg-transparent pl-11 pr-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-0 focus:outline-hidden"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md hover:shadow-lg transition text-sm cursor-pointer shrink-0"
+                        >
+                            <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
+                            <span>Semantic Search</span>
+                        </button>
+                    </form>
+
+                    {{-- Sample Search Query Pills --}}
+                    <div class="mt-3 flex flex-wrap items-center justify-center gap-2.5 text-xs text-zinc-500 dark:text-zinc-400">
+                        <span class="font-medium text-zinc-600 dark:text-zinc-300">Try searching:</span>
+                        <a href="{{ route('articles.index', ['q' => 'underwater welding safety']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs">
+                            <span>🤿</span>
+                            <span>Underwater Welding</span>
+                        </a>
+                        <a href="{{ route('articles.index', ['q' => 'electrical master exam tactics']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs">
+                            <span>⚡</span>
+                            <span>Journeyman Electrical Exam</span>
+                        </a>
+                        <a href="{{ route('articles.index', ['q' => 'solar photovoltaic apprenticeship grants']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition shadow-2xs">
+                            <span>☀️</span>
+                            <span>Solar Apprenticeship Grants</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Action Links --}}
+                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
                     <a
                         href="{{ route('articles.index') }}"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md hover:shadow-lg transition text-base"
+                        class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1.5"
                     >
-                        <span>Explore Articles</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                        </svg>
+                        <span>Browse All Articles &rarr;</span>
                     </a>
+                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
+                    <a
+                        href="{{ route('vector-lab') }}"
+                        class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
+                    >
+                        <span>Interactive Vector Lab &rarr;</span>
+                    </a>
+                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
                     <a
                         href="#architecture"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-zinc-700 dark:text-zinc-200 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-base"
+                        class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
                     >
-                        <span>Architecture Specs</span>
+                        <span>Architecture Specs &darr;</span>
                     </a>
                 </div>
             </div>

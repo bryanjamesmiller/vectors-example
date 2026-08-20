@@ -6,6 +6,7 @@ use App\Enums\Audience;
 use App\Livewire\VectorLab;
 use App\Models\Article;
 use App\Services\Ai\EmbeddingService;
+use App\Services\Ai\ScenarioService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,7 +18,64 @@ test('vector lab page is publicly accessible without login', function () {
 
     $response->assertOk()
         ->assertSee('Interactive AI Vector Lab')
-        ->assertSee('Underwater Welding');
+        ->assertSee('AI Random Scenario');
+});
+
+test('vector lab generates a randomized scenario on mount', function () {
+    $mockScenarioService = Mockery::mock(ScenarioService::class);
+    $mockScenarioService->shouldReceive('generateRandomScenario')
+        ->once()
+        ->andReturn([
+            'title' => 'Custom CNC Milling Speeds',
+            'audience' => 'students',
+            'summary' => 'CNC machining overview.',
+            'content' => 'High speed milling parameters.',
+        ]);
+
+    $this->app->instance(ScenarioService::class, $mockScenarioService);
+
+    Livewire::test(VectorLab::class)
+        ->assertSet('title', 'Custom CNC Milling Speeds')
+        ->assertSet('audience', 'students')
+        ->assertSet('summary', 'CNC machining overview.')
+        ->assertSet('content', 'High speed milling parameters.');
+});
+
+test('vector lab randomizeScenario action re-rolls fresh scenario', function () {
+    $mockScenarioService = Mockery::mock(ScenarioService::class);
+    $mockScenarioService->shouldReceive('generateRandomScenario')
+        ->twice()
+        ->andReturn(
+            [
+                'title' => 'Initial Scenario',
+                'audience' => 'recruits',
+                'summary' => 'Initial summary',
+                'content' => 'Initial content',
+            ],
+            [
+                'title' => 'Re-rolled Scenario',
+                'audience' => 'teachers',
+                'summary' => 'Re-rolled summary',
+                'content' => 'Re-rolled content',
+            ]
+        );
+
+    $this->app->instance(ScenarioService::class, $mockScenarioService);
+
+    Livewire::test(VectorLab::class)
+        ->assertSet('title', 'Initial Scenario')
+        ->call('randomizeScenario')
+        ->assertSet('title', 'Re-rolled Scenario')
+        ->assertSet('audience', 'teachers');
+});
+
+test('ScenarioService getRandomFallbackScenario returns a valid scenario array', function () {
+    $service = new ScenarioService;
+    $scenario = $service->getRandomFallbackScenario();
+
+    expect($scenario)->toHaveKeys(['title', 'audience', 'summary', 'content'])
+        ->and($scenario['title'])->not->toBeEmpty()
+        ->and($scenario['content'])->not->toBeEmpty();
 });
 
 test('presets can be loaded into the vector lab component', function () {

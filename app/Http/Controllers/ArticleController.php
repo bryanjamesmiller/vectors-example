@@ -5,23 +5,58 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Services\Ai\EmbeddingService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
+use Pgvector\Laravel\Vector;
 
 class ArticleController extends Controller
 {
     /**
-     * Display a listing of articles.
+     * Display a listing of articles with optional in-database vector similarity search.
      */
-    public function index(): View
+    public function index(Request $request, EmbeddingService $embeddingService): View
     {
-        $articles = Article::query()
-            ->where('is_published', true)
-            ->latest('created_at')
-            ->latest('id')
-            ->paginate(9);
+        $search = trim((string) $request->query('q', $request->query('search', '')));
+        $isVectorSearch = false;
+
+        if ($search !== '') {
+            $queryEmbedding = $embeddingService->generateEmbedding($search);
+
+            if (! empty($queryEmbedding)) {
+                $isVectorSearch = true;
+                $articles = Article::query()
+                    ->where('is_published', true)
+                    ->whereNotNull('embedding')
+                    ->selectRaw('articles.*, (articles.embedding <=> ?) as neighbor_distance', [new Vector($queryEmbedding)])
+                    ->orderBy('neighbor_distance')
+                    ->paginate(9)
+                    ->withQueryString();
+            } else {
+                $articles = Article::query()
+                    ->where('is_published', true)
+                    ->where(function ($query) use ($search): void {
+                        $query->whereLike('title', "%{$search}%", caseSensitive: false)
+                            ->orWhereLike('summary', "%{$search}%", caseSensitive: false)
+                            ->orWhereLike('content', "%{$search}%", caseSensitive: false);
+                    })
+                    ->latest('created_at')
+                    ->latest('id')
+                    ->paginate(9)
+                    ->withQueryString();
+            }
+        } else {
+            $articles = Article::query()
+                ->where('is_published', true)
+                ->latest('created_at')
+                ->latest('id')
+                ->paginate(9);
+        }
 
         return view('articles.index', [
             'articles' => $articles,
+            'search' => $search,
+            'isVectorSearch' => $isVectorSearch,
         ]);
     }
 

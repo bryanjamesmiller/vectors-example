@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Enums\Audience;
 use App\Models\Article;
 use App\Services\Ai\EmbeddingService;
+use App\Services\Ai\ScenarioService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,15 +25,38 @@ use Pgvector\Laravel\Vector;
 #[Title('Interactive AI Vector Lab — Live Telemetry & Proximity Inspector')]
 class VectorLab extends Component
 {
-    public string $title = 'Underwater Welding Safety & Pressure Chamber Protocols';
+    public string $title = '';
 
     public string $audience = 'students';
 
-    public string $summary = 'Critical hyperbaric welding safety standards, decompression protocols, and gas manifold checks for offshore technicians.';
+    public string $summary = '';
 
-    public string $content = 'Hyperbaric and underwater welding requires strict adherence to ASME Section IX standards. Technicians must verify gas manifold pressure differentials before diving and monitor sealed electrode insulation. Never initiate an arc while oxygen saturation in the hyperbaric habitat exceeds safety thresholds.';
+    public string $content = '';
 
     public bool $forceLiveCall = true;
+
+    /**
+     * Initialize component with fresh randomized trade school scenario.
+     */
+    public function mount(ScenarioService $scenarioService): void
+    {
+        $this->randomizeScenario($scenarioService);
+    }
+
+    /**
+     * Generate and load a fresh randomized scenario on demand.
+     */
+    public function randomizeScenario(ScenarioService $scenarioService): void
+    {
+        $scenario = $scenarioService->generateRandomScenario();
+
+        $this->title = $scenario['title'];
+        $this->audience = $scenario['audience'];
+        $this->summary = $scenario['summary'];
+        $this->content = $scenario['content'];
+
+        $this->resetCalculations();
+    }
 
     /**
      * @var array{
