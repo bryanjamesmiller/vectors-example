@@ -70,8 +70,17 @@ docker run -d \
   -p 5432:5432 \
   pgvector/pgvector:pg16
 
-# Wait for PostgreSQL to be ready, then provision the dedicated testing database:
-until docker exec pgvector-db pg_isready -U postgres >/dev/null 2>&1; do sleep 1; done
+# Wait up to 30 seconds for PostgreSQL to be ready, then provision the dedicated testing database:
+for i in {1..30}; do
+  if docker exec pgvector-db pg_isready -U postgres >/dev/null 2>&1; then
+    break
+  fi
+  if [ "$i" -eq 30 ]; then
+    echo "Timed out waiting for PostgreSQL. Run 'docker logs pgvector-db' for details."
+  fi
+  sleep 1
+done
+
 docker exec pgvector-db psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname = 'vectors_postgres_testing'" | grep -q 1 \
   || docker exec pgvector-db createdb -U postgres vectors_postgres_testing
 ```
@@ -106,10 +115,12 @@ This runs all table migrations, enables the PostgreSQL `vector` extension, and p
 ---
 
 ### Step 5: Verify the Application
-Visit the knowledge base in your browser:
-* **Index:** `http://wt-vectors-example-slow.test/articles` (or `http://localhost:8000/articles`)
+Visit the application in your browser (using `http://localhost:8000`, your Herd/Valet domain `http://<your-project>.test`, or your configured `APP_URL`):
+
+* **Landing Page:** `/` (e.g. `http://localhost:8000` or `http://vectors-example.test`)
+* **Knowledge Base:** `/articles` (e.g. `http://localhost:8000/articles`)
 * **Article & Related Recommendations:** Click any article (e.g. *"Personal Protective Equipment (PPE) Guidelines for Welding Labs"*).
-* At the bottom of the article, you will see the 3 related articles automatically matched via PostgreSQL cosine distance with their similarity match badges (e.g., `81% match`).
+  * At the bottom of the article, you will see the 3 related articles automatically matched via PostgreSQL cosine distance with their similarity match badges (e.g., `81% match`).
 
 ---
 
