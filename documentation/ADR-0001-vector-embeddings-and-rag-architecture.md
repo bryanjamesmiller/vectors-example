@@ -1,77 +1,84 @@
-# ADR 0001: AI-Powered Trade School Assistant & Semantic Search Architecture
+# ADR 0001: Multi-Tenant AI Assistant (Lumion AI) & Polymorphic Document RAG Architecture
 
-* **Status:** Proposed
-* **Date:** 2026-08-19
+* **Status:** Accepted (2026-08-19)
 * **Author:** Architecture & Engineering Team
-* **Target Stack:** PHP 8.4+, Laravel 12+, PostgreSQL with `pgvector`, Filament 3.x, OpenAI / Gemini (`text-embedding-3-small`, `gpt-4o-mini`), Pest 5.x, PHPStan (Level 8)
+* **Target Stack:** PHP 8.4+, Laravel 12+, PostgreSQL with `pgvector`, Filament 3.x, Ollama (`nomic-embed-text`) / OpenAI (`text-embedding-3-small`, `gpt-4o-mini`), Pest 5.x, PHPStan (Level 8)
+* **Related Records:**
+  * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md) *(Foundational vector proximity layer)*
+  * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./ADR-0003-environment-setup-and-local-onboarding.md) *(Environment, Docker pgvector, and Ollama setup)*
 
 ---
 
-## 1. Context & Executive Summary
+## 1. Context & Problem Statement
 
-### 1.1 The Business Goal
-Trade school administrators manage complex operational data spanning **student enrollments**, **tuition/manual payment balances**, **program certifications (e.g., Electrical, Welding, HVAC)**, and **school compliance policies**. 
+### 1.1 The Operational Challenge
+Trade school administrators manage high-stakes, multi-tenant operational data across **student enrollments**, **tuition and fee balances**, **vocational certifications**, and **institutional compliance policies**.
 
-Traditional relational queries require administrators to navigate multiple distinct tables, filters, and reports to answer day-to-day administrative questions. Lexical search (SQL `LIKE` or basic text search) fails when administrators ask conceptual, fuzzy, or cross-cutting questions such as:
-* *"Which electrical trade students are overdue on tuition?"*
-* *"What is our refund policy for withdrawn students?"*
-* *"Show me students at risk of drop-out in the Welding program due to missed payments."*
+Traditional relational queries require administrators to manually cross-reference separate tables and filters to answer administrative questions. Lexical search (`LIKE '%query%'` or basic full-text search) fails when administrators ask conceptual, fuzzy, or cross-cutting questions such as:
+* *"Which electrical trade students have overdue tuition balances?"*
+* *"What is our refund and room-and-board fee schedule for withdrawn apprentices?"*
+* *"Identify students in the Welding program at risk of suspension due to missing tool kit payments."*
 
-### 1.2 The Solution: Multi-Tenant Vector RAG Architecture
-This architecture establishes a **multi-tenant, AI-native RAG (Retrieval-Augmented Generation)** assistant built directly inside Laravel and PostgreSQL:
-1. **Multi-Tenant Vector Storage:** PostgreSQL with the `pgvector` extension stores 1,536-dimension floating point embeddings with HNSW cosine indexes partitioned per school (`school_id`).
-2. **Polymorphic Chunk Ingestion:** Domain records (`Student`, `ManualPayment`, `CompliancePolicy`) are automatically formatted into readable semantic text summaries and embedded asynchronously on change.
-3. **In-Database Vector Similarity Querying:** Executes native cosine distance queries using pgvector's `<=>` operator directly alongside tenant SQL scopes.
-4. **Context-Grounded LLM Assistant ("Lumion AI"):** Assembles retrieved domain chunks into a strict system prompt and invokes an LLM (`gpt-4o-mini` / `gemini-1.5-flash`) to generate precise, hallucination-free answers with direct record citations.
-5. **Filament 3 Native Admin UI:** School administrators interact via a custom Filament dashboard widget / modal with prompt pills, real-time responses, and clickable source links to Filament resource records.
+### 1.2 The Solution
+Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md), this architecture implements a **Multi-Tenant Retrieval-Augmented Generation (RAG) AI Assistant ("Lumion AI")** embedded directly within Laravel and PostgreSQL:
+
+1. **Multi-Tenant Vector Isolation:** 512-dimension vector embeddings stored in PostgreSQL via `pgvector`, hard-scoped by `school_id` and indexed with HNSW cosine distance indexes.
+2. **Polymorphic Chunk Ingestion:** Domain records (`Student`, `ManualPayment`, `CompliancePolicy`) are automatically formatted as structured Markdown summaries and embedded asynchronously on change.
+3. **Hybrid In-Database Retrieval:** Combines relational SQL tenant constraints (`WHERE school_id = ?`) with native `<=>` vector cosine similarity queries.
+4. **Strictly-Grounded LLM Synthesis:** Assembles retrieved tenant records into a constrained prompt passed to an LLM (`gpt-4o-mini` / local LLM), producing factual, hallucination-free answers with direct record citations.
+5. **Filament 3 Native Assistant Panel:** Provides school administrators with an embedded interactive assistant widget featuring prompt pills, real-time responses, and direct deep-links to administrative resource pages.
 
 ---
 
-## 2. Technical Stack & Standards
+## 2. Technical Stack & Core Standards
 
-| Component | Technology | Version / Specification |
+| Component | Technology / Specification | Standard & Rationale |
 | :--- | :--- | :--- |
-| **Language & Runtime** | PHP | `^8.4` with `declare(strict_types=1)` & `CarbonImmutable` |
-| **Framework** | Laravel | `12.x` / `13.x` |
-| **Primary Database & Vectors** | PostgreSQL + `pgvector` | `pgvector/pgvector` package (`vector(1536)` + HNSW index) |
-| **Admin Panel UI** | Filament | `3.x` (Livewire 3 + Tailwind CSS + Alpine.js) |
-| **AI / Embedding SDK** | OpenAI PHP / Gemini | `openai-php/laravel` (`text-embedding-3-small` & `gpt-4o-mini`) |
-| **Testing Framework** | Pest PHP | `pestphp/pest` with Mocking & RefreshDatabase |
-| **Code Style & Static Analysis** | Laravel Pint & PHPStan | PER-CS / PSR-12, PHPStan Level 8 |
+| **Language & Runtime** | PHP `^8.4` | Strictly typed with `declare(strict_types=1);` and `CarbonImmutable`. |
+| **Framework** | Laravel `12.x` / `13.x` | Standardized service architecture with queued background jobs. |
+| **Primary Database & Vectors** | PostgreSQL 16 + `pgvector` | `vector('embedding', 512)` with `USING hnsw (embedding vector_cosine_ops)`. |
+| **Domain Enums** | Backed Enums | `TradeProgram`, `PaymentType`, `PaymentStatus`, `EnrollmentStatus`. |
+| **AI Embedding Engine** | Dual-Engine Provider | Local **Ollama** (`nomic-embed-text`) for dev; Cloud **OpenAI** for production. |
+| **LLM Synthesis Model** | `gpt-4o-mini` | Low temperature (`0.1`) for deterministic factual context grounding. |
+| **Admin Panel UI** | Filament `3.x` | Livewire 3 + Tailwind CSS embedded assistant widgets. |
+| **Testing & Quality** | Pest PHP & PHPStan | Comprehensive feature tests, PHPStan Level 8, and Laravel Pint. |
+
+> [!NOTE]
+> For complete instructions on spinning up the PostgreSQL Docker container, installing Ollama, or configuring `.env`, refer to **[ADR-0003: Environment Setup and Local Onboarding](./ADR-0003-environment-setup-and-local-onboarding.md)**.
 
 ---
 
 ## 3. System Architecture & Workflows
 
-### 3.1 Domain Ingestion Pipeline
+### 3.1 Asynchronous Polymorphic Ingestion Pipeline
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Admin as School Admin / System
+    actor Admin as School Administrator
     participant App as Filament / Eloquent Model
     participant Observer as Model Observer
     participant Queue as Laravel Queue Worker
     participant Action as IndexSchoolRecordForRagAction
-    participant AI as OpenAI / Gemini API
+    participant Embed as EmbeddingService (Ollama / OpenAI)
     participant PG as PostgreSQL (pgvector)
 
-    Admin->>App: Create/Update Student or Payment
-    App->>PG: INSERT/UPDATE students / manual_payments
+    Admin->>App: Creates / Updates Student or Payment record
+    App->>PG: INSERT / UPDATE students or manual_payments
     App->>Observer: Model saved event fired
-    Observer->>Queue: Dispatch GenerateVectorEmbeddingJob(model)
+    Observer->>Queue: Dispatch GenerateRecordEmbeddingJob(model)
     
     Queue->>Action: execute(model)
-    Action->>Action: Format semantic summary string
-    Action->>AI: POST /v1/embeddings (text-embedding-3-small)
-    AI-->>Action: Vector: [1536 floats]
+    Action->>Action: Formats structured Markdown summary
+    Action->>Embed: generateEmbedding(markdownText)
+    Embed-->>Action: Vector: [512 floats] (from Cache or AI Model)
     
     Action->>PG: UPSERT school_document_embeddings (school_id, morphs, embedding, metadata)
 ```
 
 ---
 
-### 3.2 RAG Semantic Search & LLM Assistant Flow
+### 3.2 Multi-Tenant RAG Search & LLM Assistant Query Flow
 
 ```mermaid
 sequenceDiagram
@@ -80,196 +87,112 @@ sequenceDiagram
     participant UI as Filament Assistant Widget
     participant Assistant as SchoolAiAssistantService
     participant Search as RagSearchService
-    participant AI_Embed as Embedding API
+    participant Embed as EmbeddingService
     participant PG as PostgreSQL (pgvector)
-    participant AI_LLM as LLM Completion API
+    participant LLM as LLM Completion API (gpt-4o-mini)
 
-    Admin->>UI: Submits query: "Which electrical students are overdue on tuition?"
-    UI->>Assistant: ask(school, query)
-    Assistant->>Search: search(schoolId, query, limit = 5)
+    Admin->>UI: Submits inquiry: "Which electrical students have overdue payments?"
+    UI->>Assistant: ask(currentSchool, question)
+    Assistant->>Search: search(schoolId, question, limit = 5)
     
-    Search->>AI_Embed: Generate embedding for query string
-    AI_Embed-->>Search: Query vector: [1536 floats]
+    Search->>Embed: generateEmbedding(question)
+    Embed-->>Search: Query Vector: [512 floats]
     
-    Search->>PG: SELECT * FROM school_document_embeddings WHERE school_id = ? ORDER BY embedding <=> ? LIMIT 5
-    PG-->>Search: Top-5 matching chunks (with morph links to Student/Payment)
+    Search->>PG: SELECT * FROM school_document_embeddings WHERE school_id = :id ORDER BY embedding <=> :vector LIMIT 5
+    PG-->>Search: Top-5 matching chunks (strictly scoped to current school)
     
-    Assistant->>AI_LLM: Prompt with [CONTEXT RECORDS] (strict grounding)
-    AI_LLM-->>Assistant: Answer text with citations
-    Assistant-->>UI: Formatted answer + Record links
-    UI-->>Admin: Render response in Filament modal
+    Assistant->>LLM: Prompt with [CONTEXT RECORDS] + Grounding Constraints
+    LLM-->>Assistant: Factual answer text + direct record citations
+    Assistant-->>UI: Formatted answer + Clickable source links
+    UI-->>Admin: Render response in Filament Assistant modal
 ```
 
 ---
 
-## 4. Detailed Implementation Blueprint
+## 4. Implementation Blueprint
 
-### Phase 1: Package & Database Setup
-1. **Configure PostgreSQL with `pgvector`:**
-   - Update `.env` to use `DB_CONNECTION=pgsql`.
-   - Install the official pgvector Laravel package:
-     ```bash
-     composer require pgvector/pgvector
-     ```
-2. **Install Filament & AI SDKs:**
-   ```bash
-   composer require filament/filament:"^3.2" -W
-   composer require openai-php/laravel
-   ```
-3. **Publish Configurations:**
-   - Publish OpenAI configuration (`php artisan vendor:publish --provider="OpenAI\Laravel\ServiceProvider"`).
-   - Configure `OPENAI_API_KEY`, `AI_EMBEDDING_MODEL=text-embedding-3-small`, and `AI_CHAT_MODEL=gpt-4o-mini` in `.env`.
+### 4.1 Domain Schema & Backed Enums
 
----
+All domain models use strictly typed backed enums to ensure data integrity across the platform:
 
-### Phase 2: Domain Schema & Vector Migrations
-
-#### 1. Enable `pgvector` Extension Migration
 ```php
-// database/migrations/0001_01_01_000010_enable_pgvector_extension.php
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
-
-return new class extends Migration {
-    public function up(): void
-    {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
-    }
-
-    public function down(): void
-    {
-        DB::statement('DROP EXTENSION IF EXISTS vector');
-    }
-};
-```
-
-#### 2. Core Trade School Domain Tables
-```php
-// database/migrations/0001_01_01_000020_create_trade_school_tables.php
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration {
-    public function up(): void
-    {
-        Schema::create('schools', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
-        });
-
-        Schema::create('students', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('school_id')->constrained()->cascadeOnDelete();
-            $table->string('name');
-            $table->string('email');
-            $table->string('program_name'); // e.g. "Electrical", "Welding", "HVAC"
-            $table->string('enrollment_status')->default('active'); // active, graduated, withdrawn, suspended
-            $table->timestamps();
-
-            $table->index(['school_id', 'enrollment_status']);
-        });
-
-        Schema::create('manual_payments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('school_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
-            $table->unsignedBigInteger('amount_in_cents');
-            $table->string('type'); // tuition, lab_fees, tools, certification_exam
-            $table->string('status')->default('pending'); // pending, paid, overdue, refunded
-            $table->date('due_date');
-            $table->timestamp('paid_at')->nullable();
-            $table->timestamps();
-
-            $table->index(['school_id', 'status', 'due_date']);
-        });
-    }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('manual_payments');
-        Schema::dropIfExists('students');
-        Schema::dropIfExists('schools');
-    }
-};
-```
-
-#### 3. Vector Embeddings Table with HNSW Index
-```php
-// database/migrations/0001_01_01_000030_create_school_document_embeddings_table.php
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration {
-    public function up(): void
-    {
-        Schema::create('school_document_embeddings', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignId('school_id')->constrained()->cascadeOnDelete();
-            $table->uuidMorphs('documentable'); // morphs to Student, ManualPayment, Policy
-            $table->text('content_chunk');
-            $table->jsonb('metadata')->nullable();
-            
-            // 1536-dimensional vector column
-            $table->vector('embedding', 1536);
-            
-            $table->timestamps();
-
-            $table->index(['school_id', 'documentable_type']);
-        });
-
-        // Fast Approximate Nearest Neighbor (ANN) index using Cosine Distance
-        DB::statement('CREATE INDEX school_doc_embeddings_hnsw_idx ON school_document_embeddings USING hnsw (embedding vector_cosine_ops)');
-    }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('school_document_embeddings');
-    }
-};
-```
-
----
-
-### Phase 3: Embedding Ingestion Service & Actions
-
-#### 1. `App\Services\Ai\EmbeddingService`
-```php
-namespace App\Services\Ai;
-
-use OpenAI\Laravel\Facades\OpenAI;
-use RuntimeException;
-
-class EmbeddingService
+// app/Enums/TradeProgram.php
+enum TradeProgram: string
 {
-    /**
-     * Convert text into a 1536-dimension float array using OpenAI embeddings.
-     *
-     * @return array<int, float>
-     */
-    public function generateEmbedding(string $text): array
-    {
-        $cleaned = trim(preg_replace('/\s+/', ' ', $text) ?? '');
-        if (empty($cleaned)) {
-            return [];
-        }
+    case Electrical = 'electrical';
+    case Welding = 'welding';
+    case Hvac = 'hvac';
+    case Plumbing = 'plumbing';
+    case Automotive = 'automotive';
+    case Carpentry = 'carpentry';
+}
 
-        $response = OpenAI::embeddings()->create([
-            'model' => config('ai.embedding.model', 'text-embedding-3-small'),
-            'input' => $cleaned,
-            'dimensions' => 1536,
-        ]);
+// app/Enums/PaymentType.php
+enum PaymentType: string
+{
+    case Tuition = 'tuition';
+    case LabFees = 'lab_fees';
+    case Tools = 'tools';
+    case RoomAndBoard = 'room_and_board';
+}
 
-        return $response->embeddings[0]->embedding ?? [];
-    }
+// app/Enums/PaymentStatus.php
+enum PaymentStatus: string
+{
+    case Pending = 'pending';
+    case Paid = 'paid';
+    case Overdue = 'overdue';
+    case Refunded = 'refunded';
+}
+
+// app/Enums/EnrollmentStatus.php
+enum EnrollmentStatus: string
+{
+    case Active = 'active';
+    case Graduated = 'graduated';
+    case Withdrawn = 'withdrawn';
+    case Suspended = 'suspended';
 }
 ```
 
-#### 2. `App\Actions\IndexSchoolRecordForRagAction`
+---
+
+### 4.2 Polymorphic Embeddings Table (`school_document_embeddings`)
+
+The `school_document_embeddings` table stores vectorized representations for any school-scoped entity (`Student`, `ManualPayment`, `CompliancePolicy`) with an HNSW cosine index:
+
+```php
+// database/migrations/0001_01_01_000007_create_school_document_embeddings_table.php
+Schema::create('school_document_embeddings', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->foreignId('school_id')->constrained()->cascadeOnDelete();
+    $table->morphs('documentable'); // morphs to Student, ManualPayment, Policy
+    $table->text('content_chunk');
+
+    if (DB::getDriverName() === 'pgsql') {
+        $table->jsonb('metadata')->nullable();
+        $table->vector('embedding', 512);
+    } else {
+        $table->json('metadata')->nullable();
+        $table->json('embedding')->nullable();
+    }
+
+    $table->timestamps();
+
+    $table->index(['school_id', 'documentable_type']);
+});
+
+if (DB::getDriverName() === 'pgsql') {
+    DB::statement('CREATE INDEX school_doc_embeddings_hnsw_idx ON school_document_embeddings USING hnsw (embedding vector_cosine_ops)');
+}
+```
+
+---
+
+### 4.3 Markdown Document Ingestion Action
+
+Documents are formatted into clean Markdown before vectorization to eliminate JSON token noise and preserve semantic hierarchy:
+
 ```php
 namespace App\Actions;
 
@@ -286,12 +209,12 @@ class IndexSchoolRecordForRagAction
 
     public function execute(Model $record): ?SchoolDocumentEmbedding
     {
-        $summary = $this->buildSemanticSummary($record);
-        if (empty($summary)) {
+        $markdown = $this->buildSemanticMarkdown($record);
+        if ($markdown === '') {
             return null;
         }
 
-        $vector = $this->embeddingService->generateEmbedding($summary);
+        $vector = $this->embeddingService->generateEmbedding($markdown);
         if (empty($vector)) {
             return null;
         }
@@ -304,9 +227,9 @@ class IndexSchoolRecordForRagAction
             ],
             [
                 'id' => Str::uuid()->toString(),
-                'content_chunk' => $summary,
+                'content_chunk' => $markdown,
                 'metadata' => [
-                    'title' => $record instanceof Student ? $record->name : "Payment for Student #{$record->student_id}",
+                    'title' => $record instanceof Student ? $record->name : "Payment #{$record->id}",
                     'updated_at' => now()->toIso8601String(),
                 ],
                 'embedding' => $vector,
@@ -314,32 +237,31 @@ class IndexSchoolRecordForRagAction
         );
     }
 
-    protected function buildSemanticSummary(Model $record): string
+    protected function buildSemanticMarkdown(Model $record): string
     {
         if ($record instanceof Student) {
-            return sprintf(
-                "Student %s (Email: %s) enrolled in the %s program. Enrollment Status: %s. School ID: %d.",
-                $record->name,
-                $record->email,
-                $record->program_name,
-                ucfirst($record->enrollment_status),
-                $record->school_id
-            );
+            return <<<MARKDOWN
+            # Student: {$record->name}
+            **Program:** {$record->program_name->value}
+            **Status:** {$record->enrollment_status->value}
+            **Email:** {$record->email}
+            **School ID:** {$record->school_id}
+            MARKDOWN;
         }
 
         if ($record instanceof ManualPayment) {
             $record->loadMissing('student');
             $formattedAmount = number_format($record->amount_in_cents / 100, 2);
-            return sprintf(
-                "Payment Record for Student %s in %s program. Type: %s. Amount: $%s. Status: %s. Due Date: %s. Paid At: %s.",
-                $record->student?->name ?? 'Unknown',
-                $record->student?->program_name ?? 'Unknown',
-                str_replace('_', ' ', $record->type),
-                $formattedAmount,
-                strtoupper($record->status),
-                $record->due_date->format('Y-m-d'),
-                $record->paid_at ? $record->paid_at->format('Y-m-d H:i') : 'Not paid'
-            );
+
+            return <<<MARKDOWN
+            # Payment Record for Student {$record->student?->name}
+            **Trade Program:** {$record->student?->program_name?->value}
+            **Payment Category:** {$record->type->value}
+            **Amount:** \${$formattedAmount}
+            **Status:** {$record->status->value}
+            **Due Date:** {$record->due_date->format('Y-m-d')}
+            **Paid At:** {$record->paid_at?->format('Y-m-d H:i') ?? 'Not paid'}
+            MARKDOWN;
         }
 
         return '';
@@ -347,39 +269,12 @@ class IndexSchoolRecordForRagAction
 }
 ```
 
-#### 3. Queued Background Job & Observers
-```php
-namespace App\Jobs;
-
-use App\Actions\IndexSchoolRecordForRagAction;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-
-class GenerateVectorEmbeddingJob implements ShouldQueue
-{
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public int $tries = 3;
-    public int $backoff = 5;
-
-    public function __construct(public Model $record) {}
-
-    public function handle(IndexSchoolRecordForRagAction $action): void
-    {
-        $action->execute($this->record);
-    }
-}
-```
-
 ---
 
-### Phase 4: The RAG Semantic Search & LLM Engine
+### 4.4 Tenant-Scoped RAG Search Service
 
-#### 1. `App\Services\Ai\RagSearchService`
+Executes hybrid search ensuring **100% strict multi-tenant isolation** by combining `where('school_id', $schoolId)` with vector proximity:
+
 ```php
 namespace App\Services\Ai;
 
@@ -392,7 +287,7 @@ class RagSearchService
     public function __construct(protected EmbeddingService $embeddingService) {}
 
     /**
-     * Search nearest document chunks for a school using pgvector cosine distance (<=>).
+     * Search nearest document chunks strictly scoped to a specific school tenant.
      *
      * @return Collection<int, SchoolDocumentEmbedding>
      */
@@ -403,16 +298,24 @@ class RagSearchService
             return new Collection();
         }
 
-        return SchoolDocumentEmbedding::query()
+        /** @var Collection<int, SchoolDocumentEmbedding> $results */
+        $results = SchoolDocumentEmbedding::query()
             ->where('school_id', $schoolId)
             ->orderByRaw('embedding <=> ?', [new Vector($queryVector)])
             ->limit($limit)
             ->get();
+
+        return $results;
     }
 }
 ```
 
-#### 2. `App\Services\Ai\SchoolAiAssistantService`
+---
+
+### 4.5 Grounded Assistant Synthesis Service ("Lumion AI")
+
+Answers administrative inquiries using retrieved records as strict context boundaries:
+
 ```php
 namespace App\Services\Ai;
 
@@ -424,7 +327,7 @@ class SchoolAiAssistantService
     public function __construct(protected RagSearchService $ragSearchService) {}
 
     /**
-     * Answer an administrator's query with strict grounding against school records.
+     * Answer an administrator's query strictly grounded in their school's records.
      *
      * @return array{answer: string, chunks: array<int, array<string, mixed>>}
      */
@@ -434,29 +337,29 @@ class SchoolAiAssistantService
 
         if ($matchedChunks->isEmpty()) {
             return [
-                'answer' => 'I could not find records matching that inquiry.',
+                'answer' => 'I could not find records matching that inquiry for this school.',
                 'chunks' => [],
             ];
         }
 
-        $contextSnippets = $matchedChunks->map(function ($chunk, int $i) {
+        $contextSnippets = $matchedChunks->map(function (SchoolDocumentEmbedding $chunk, int $i): string {
             $num = $i + 1;
-            return "[RECORD #{$num}]: {$chunk->content_chunk}";
-        })->implode("\n\n");
+            return "[RECORD #{$num}]:\n{$chunk->content_chunk}";
+        })->implode("\n\n---\n\n");
 
         $systemPrompt = <<<PROMPT
-You are Lumion AI, the operating system assistant for trade schools.
-Answer the administrator's question using ONLY the provided school records below.
-If the answer cannot be found in the context, say "I could not find records matching that inquiry."
-Do not extrapolate or speculate. Cite the specific student names and amounts directly.
+        You are Lumion AI, the intelligent operating assistant for trade schools.
+        Answer the administrator's question using ONLY the provided school records below.
+        If the answer cannot be determined from the context, state: "I could not find records matching that inquiry."
+        Do not extrapolate or speculate. Cite specific student names, program trades, and dollar amounts directly.
 
-[CONTEXT RECORDS]:
-{$contextSnippets}
-PROMPT;
+        [CONTEXT RECORDS]:
+        {$contextSnippets}
+        PROMPT;
 
         $response = OpenAI::chat()->create([
-            'model' => config('ai.chat.model', 'gpt-4o-mini'),
-            'temperature' => 0.1,
+            'model' => (string) config('ai.chat.model', 'gpt-4o-mini'),
+            'temperature' => (float) config('ai.chat.temperature', 0.1),
             'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],
                 ['role' => 'user', 'content' => $question],
@@ -465,9 +368,10 @@ PROMPT;
 
         $answer = $response->choices[0]->message->content ?? 'No response generated.';
 
-        $sources = $matchedChunks->map(fn ($chunk) => [
+        $sources = $matchedChunks->map(fn (SchoolDocumentEmbedding $chunk): array => [
             'type' => class_basename($chunk->documentable_type),
             'id' => $chunk->documentable_id,
+            'title' => $chunk->metadata['title'] ?? 'Record',
             'content' => $chunk->content_chunk,
         ])->all();
 
@@ -481,137 +385,12 @@ PROMPT;
 
 ---
 
-### Phase 5: Filament 3 Admin UI & AI Chat Assistant
-* **Filament Widget / Modal (`SchoolAiAssistantWidget`):**
-  - Integrated into the Filament Admin Dashboard for quick access.
-  - Interactive prompt pill shortcuts:
-    - *"Who has overdue payments in the Electrical program?"*
-    - *"What is our student retention rate this term?"*
-    - *"List all withdrawn students with pending equipment fees."*
-  - Livewire real-time submission with formatted Markdown response rendering.
-  - Interactive "Sources Used" accordion linking directly to the corresponding Filament Student and Payment Resource pages (`/admin/students/{id}`).
+## 5. Security, Multi-Tenancy, and Isolation Guarantees
 
----
-
-### Phase 6: Pest PHP Test Suite
-
-#### 1. Unit Tests (`tests/Unit/EmbeddingServiceTest.php`)
-```php
-use App\Services\Ai\EmbeddingService;
-use OpenAI\Laravel\Facades\OpenAI;
-use OpenAI\Responses\Embeddings\CreateResponse;
-
-test('embedding service generates 1536 dimension float array', function () {
-    $fakeVector = array_fill(0, 1536, 0.042);
-
-    OpenAI::fake([
-        CreateResponse::fake([
-            'embeddings' => [
-                ['embedding' => $fakeVector],
-            ],
-        ]),
-    ]);
-
-    $service = new EmbeddingService();
-    $embedding = $service->generateEmbedding('Test Student Welding');
-
-    expect($embedding)->toHaveCount(1536)
-        ->and($embedding[0])->toBe(0.042);
-});
-```
-
-#### 2. Feature Tests (`tests/Feature/RagSearchTest.php`)
-```php
-use App\Actions\IndexSchoolRecordForRagAction;
-use App\Models\School;
-use App\Models\Student;
-use App\Services\Ai\EmbeddingService;
-use App\Services\Ai\RagSearchService;
-use OpenAI\Laravel\Facades\OpenAI;
-use OpenAI\Responses\Embeddings\CreateResponse;
-
-test('rag search retrieves semantically close records and enforces multi-tenant isolation', function () {
-    $schoolA = School::factory()->create(['name' => 'Apex Trade Institute']);
-    $schoolB = School::factory()->create(['name' => 'Metro Technical Academy']);
-
-    $studentA = Student::factory()->create([
-        'school_id' => $schoolA->id,
-        'name' => 'Marcus Vance',
-        'program_name' => 'Electrical',
-    ]);
-
-    $studentB = Student::factory()->create([
-        'school_id' => $schoolB->id,
-        'name' => 'Secret Student',
-        'program_name' => 'Electrical',
-    ]);
-
-    // Mock embedding generation
-    OpenAI::fake([
-        CreateResponse::fake(['embeddings' => [['embedding' => array_fill(0, 1536, 0.1)]]]),
-    ]);
-
-    $indexer = app(IndexSchoolRecordForRagAction::class);
-    $indexer->execute($studentA);
-    $indexer->execute($studentB);
-
-    $ragSearch = app(RagSearchService::class);
-    $resultsA = $ragSearch->search($schoolA->id, 'Electrical student Marcus');
-
-    // Multi-tenant check: School A must see Marcus but NEVER School B's student
-    expect($resultsA)->toHaveCount(1)
-        ->and($resultsA->first()->content_chunk)->toContain('Marcus Vance')
-        ->and($resultsA->pluck('content_chunk'))->not->toContain('Secret Student');
-});
-```
-
-#### 3. Assistant Feature Tests (`tests/Feature/SchoolAiAssistantTest.php`)
-```php
-use App\Models\School;
-use App\Services\Ai\RagSearchService;
-use App\Services\Ai\SchoolAiAssistantService;
-use Illuminate\Database\Eloquent\Collection;
-use OpenAI\Laravel\Facades\OpenAI;
-use OpenAI\Responses\Chat\CreateResponse;
-
-test('assistant constructs grounded prompt and returns answer', function () {
-    $school = School::factory()->create();
-
-    $mockSearch = Mockery::mock(RagSearchService::class);
-    $mockSearch->shouldReceive('search')
-        ->once()
-        ->andReturn(new Collection([
-            (object) ['content_chunk' => 'Student Alex is overdue by $500 in Electrical.'],
-        ]));
-
-    OpenAI::fake([
-        CreateResponse::fake([
-            'choices' => [
-                ['message' => ['content' => 'Alex in the Electrical program is overdue by $500.']],
-            ],
-        ]),
-    ]);
-
-    $assistant = new SchoolAiAssistantService($mockSearch);
-    $result = $assistant->ask($school, 'Who is overdue in Electrical?');
-
-    expect($result['answer'])->toContain('Alex in the Electrical program is overdue by $500.')
-        ->and($result['chunks'])->toHaveCount(1);
-});
-```
-
----
-
-### Phase 7: Code Quality & Verification Standards
-* **Formatting:** Run `./vendor/bin/pint` to enforce PER-CS / PSR-12 standard.
-* **Static Analysis:** Run `./vendor/bin/phpstan analyse --level=8` for strict type safety.
-* **Testing:** Run `php artisan test --compact` to verify all unit and feature tests pass.
-
----
-
-## 5. Summary of Decision & Benefits
-
-1. **Native Single-Stack Architecture:** Zero external microservices or standalone vector DBs needed—PostgreSQL `pgvector` provides ACID guarantees, multi-tenant relational integrity, and fast HNSW index cosine distance searching in a single database engine.
-2. **Deterministic Context Grounding:** Eliminates LLM hallucinations by enforcing strict context boundaries inside `SchoolAiAssistantService`.
-3. **Seamless Filament 3 Integration:** School staff query records without leaving their administrative workflow.
-4. **Asynchronous Ingestion:** Background queue jobs ensure model creations and edits remain snappy and non-blocking for end users.
+1. **Guaranteed Tenant Partitioning:**
+   * In-database vector search enforces `WHERE school_id = :current_school_id` on every query.
+   * School A administrators can **never** retrieve or leak School B embeddings, records, or policy documents.
+2. **Deterministic Context Grounding:**
+   * LLM temperature is locked at `0.1` to prevent hallucinations and strictly enforce record-derived answers.
+3. **ACID-Compliant Single-Engine Storage:**
+   * Relational data and vector embeddings live side-by-side in PostgreSQL. Cascade deletes on `School` or `Student` automatically remove corresponding embeddings with full referential integrity.
