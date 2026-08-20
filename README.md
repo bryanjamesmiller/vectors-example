@@ -21,10 +21,12 @@ The application is deployed live on **Laravel Cloud**:
 
 ## ⚡ Key Architectural Features
 
+* **Interactive AI Vector Lab (`/vector-lab`):** An interactive playground to test live AI vector embeddings, inspect microsecond roundtrip latency, copy full 512d JSON matrices, and evaluate native PostgreSQL `<=>` cosine distance proximity rankings in real time.
 * **In-Database Vector Proximity (`pgvector`):** Uses native PostgreSQL vector cosine distance (`<=>`) with HNSW indexing for real-time, sub-millisecond semantic search and recommendations without external vector database dependencies.
 * **Dual-Engine AI Embeddings:**
   * **Local Development (Default):** 100% free, offline, private embeddings powered by a local **Ollama** instance (`nomic-embed-text`).
   * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, truncated to 512 Matryoshka dimensions).
+* **Articles & Vector Manager (`/dashboard`):** Full Livewire CRUD management with vector status indicators, mixed-case PostgreSQL search (`whereLike`), and on-demand re-embedding.
 * **Deterministic Seeding & Caching:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning in milliseconds with zero network or AI model calls.
 * **Modern UI & Stack:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS.
 * **Zero-Downtime Serverless Hosting:** Hosted on Laravel Cloud with Serverless Postgres (Dev configuration with Scale-to-Zero).
@@ -101,7 +103,7 @@ ollama pull nomic-embed-text
 ```bash
 php artisan serve
 ```
-Visit **[http://localhost:8000](http://localhost:8000)** (or your local Herd/Valet domain) to explore the knowledge base and live vector recommendations!
+Visit **[http://localhost:8000](http://localhost:8000)** (or your local Herd/Valet domain) to explore the live Vector Lab (`/vector-lab`), articles (`/articles`), and semantic recommendations!
 
 ---
 
@@ -114,7 +116,7 @@ Run static analysis, code formatting checks, and automated Pest tests:
 ./vendor/bin/pint --format agent
 
 # PHPStan Static Analysis (Level 8)
-./vendor/bin/phpstan analyse
+./vendor/bin/phpstan analyse --level=8
 
 # Pest Test Suite
 php artisan test --compact
@@ -129,3 +131,4 @@ For deep dives into design decisions, vector indexing trade-offs, and schema arc
 * [ADR-0001: Multi-Tenant AI Assistant & Document RAG Architecture](./documentation/ADR-0001-vector-embeddings-and-rag-architecture.md)
 * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](./documentation/ADR-0002-article-semantic-recommendations-via-vector-proximity.md)
 * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./documentation/ADR-0003-environment-setup-and-local-onboarding.md)
+* [ADR-0004: Interactive AI Vector Lab & Dashboard Articles Management](./documentation/ADR-0004-interactive-ai-vector-lab-and-article-manager.md)
