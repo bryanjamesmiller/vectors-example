@@ -243,7 +243,8 @@ test('dynamic cache checkbox reflects whether text is cached or requires live ap
         ->set('title', 'Brand New Uncached Title')
         ->set('content', 'Brand new uncached content.')
         ->assertSee('Live AI API Call Required')
-        ->assertSee('New / Uncached Content');
+        ->assertSee('New / Uncached Content')
+        ->assertSeeHtml('checked disabled');
 
     $model = (string) config('ai.embedding.model', 'nomic-embed-text');
     $dimensions = (int) config('ai.embedding.dimensions', 512);
@@ -258,5 +259,73 @@ test('dynamic cache checkbox reflects whether text is cached or requires live ap
         ->set('summary', '')
         ->set('content', 'Cached content.')
         ->assertSee('Bypass Cache')
-        ->assertSee('Cached Embedding Available');
+        ->assertSee('Cached Embedding Available')
+        ->assertDontSeeHtml('checked disabled')
+        ->assertSeeHtml('wire:model="forceLiveCall"');
+});
+
+test('generate embedding respects cached state and force live call flag', function () {
+    Cache::flush();
+    $sampleVector = array_fill(0, 512, 0.02);
+
+    $mockService = Mockery::mock(EmbeddingService::class);
+    // 1. Uncached generation: forceLive is true even if forceLiveCall is false
+    $mockService->shouldReceive('generateWithTelemetry')
+        ->once()
+        ->with(Mockery::type('string'), true)
+        ->andReturn([
+            'embedding' => $sampleVector,
+            'provider' => 'OpenAI API (Cloud)',
+            'model' => 'text-embedding-3-small',
+            'dimensions' => 512,
+            'latency_ms' => 120.0,
+            'is_cached' => false,
+            'endpoint' => 'https://api.openai.com/v1',
+            'character_count' => 100,
+            'error' => null,
+        ]);
+
+    // 2. Cached generation with forceLiveCall = false passes false to service
+    $mockService->shouldReceive('generateWithTelemetry')
+        ->once()
+        ->with(Mockery::type('string'), false)
+        ->andReturn([
+            'embedding' => $sampleVector,
+            'provider' => 'OpenAI API (Cloud)',
+            'model' => 'text-embedding-3-small',
+            'dimensions' => 512,
+            'latency_ms' => 0.5,
+            'is_cached' => true,
+            'endpoint' => 'https://api.openai.com/v1',
+            'character_count' => 100,
+            'error' => null,
+        ]);
+
+    $this->app->instance(EmbeddingService::class, $mockService);
+
+    // Uncached call -> bypassCache is true
+    Livewire::test(VectorLab::class)
+        ->set('title', 'Uncached Article')
+        ->set('audience', 'students')
+        ->set('content', 'Brand new content')
+        ->set('forceLiveCall', false)
+        ->call('generateEmbedding');
+
+    // Populate cache for a known text
+    $model = (string) config('ai.embedding.model', 'nomic-embed-text');
+    $dimensions = (int) config('ai.embedding.dimensions', 512);
+    $textToEmbed = "# Cached Article\n**Target Audience:** students\n## Content\nCached content text";
+    $cleaned = trim(preg_replace('/\s+/', ' ', $textToEmbed) ?? $textToEmbed);
+    $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+    Cache::put($cacheKey, $sampleVector, 3600);
+
+    // Cached call with forceLiveCall = false -> bypassCache is false
+    Livewire::test(VectorLab::class)
+        ->set('title', 'Cached Article')
+        ->set('audience', 'students')
+        ->set('summary', '')
+        ->set('content', 'Cached content text')
+        ->set('forceLiveCall', false)
+        ->call('generateEmbedding')
+        ->assertSet('telemetry.is_cached', true);
 });
