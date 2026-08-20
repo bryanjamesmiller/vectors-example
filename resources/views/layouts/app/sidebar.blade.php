@@ -6,17 +6,17 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{ route('home') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        {{ __('Dashboard & Vectors') }}
+                <flux:sidebar.group :heading="__('Explore')" class="grid">
+                    <flux:sidebar.item icon="book-open-text" :href="route('articles.index')" :current="request()->routeIs('articles.*')" wire:navigate>
+                        {{ __('Articles') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="book-open-text" :href="route('articles.index')" target="_blank">
-                        {{ __('Public Articles') }}
+                    <flux:sidebar.item icon="beaker" :href="route('vector-lab')" :current="request()->routeIs('vector-lab')" wire:navigate>
+                        {{ __('Vector Lab') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
@@ -24,6 +24,10 @@
             <flux:spacer />
 
             <flux:sidebar.nav>
+                <flux:sidebar.item icon="home" :href="route('home')">
+                    {{ __('Home') }}
+                </flux:sidebar.item>
+
                 <flux:sidebar.item icon="folder-git-2" href="https://github.com/bryanjamesmiller/vectors-example" target="_blank">
                     {{ __('Repository') }}
                 </flux:sidebar.item>
@@ -35,12 +39,6 @@
 
             @auth
                 <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
-            @else
-                <div class="hidden lg:block p-3">
-                    <a href="{{ route('login') }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition">
-                        {{ __('Log in') }}
-                    </a>
-                </div>
             @endauth
         </flux:sidebar>
 
@@ -98,10 +96,6 @@
                     </form>
                 </flux:menu>
             </flux:dropdown>
-            @else
-                <a href="{{ route('login') }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 dark:hover:border-zinc-500 transition">
-                    {{ __('Log in') }}
-                </a>
             @endauth
         </flux:header>
 
