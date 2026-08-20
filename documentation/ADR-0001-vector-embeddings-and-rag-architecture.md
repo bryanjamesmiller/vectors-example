@@ -4,8 +4,8 @@
 * **Author:** Architecture & Engineering Team
 * **Target Stack:** PHP 8.4+, Laravel 12+, PostgreSQL with `pgvector`, Filament 3.x, Ollama (`nomic-embed-text`) / OpenAI (`text-embedding-3-small`, `gpt-4o-mini`), Pest 5.x, PHPStan (Level 8)
 * **Related Records:**
-  * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](file:///Users/bryanmiller/dev/apps/wt-vectors-example-slow/documentation/ADR-0002-article-semantic-recommendations-via-vector-proximity.md) *(Foundational vector proximity layer)*
-  * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](file:///Users/bryanmiller/dev/apps/wt-vectors-example-slow/documentation/ADR-0003-environment-setup-and-local-onboarding.md) *(Environment, Docker pgvector, and Ollama setup)*
+  * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md) *(Foundational vector proximity layer)*
+  * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./ADR-0003-environment-setup-and-local-onboarding.md) *(Environment, Docker pgvector, and Ollama setup)*
 
 ---
 
@@ -20,7 +20,7 @@ Traditional relational queries require administrators to manually cross-referenc
 * *"Identify students in the Welding program at risk of suspension due to missing tool kit payments."*
 
 ### 1.2 The Solution
-Building upon the vector proximity foundation proven in [ADR-0002](file:///Users/bryanmiller/dev/apps/wt-vectors-example-slow/documentation/ADR-0002-article-semantic-recommendations-via-vector-proximity.md), this architecture implements a **Multi-Tenant Retrieval-Augmented Generation (RAG) AI Assistant ("Lumion AI")** embedded directly within Laravel and PostgreSQL:
+Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md), this architecture implements a **Multi-Tenant Retrieval-Augmented Generation (RAG) AI Assistant ("Lumion AI")** embedded directly within Laravel and PostgreSQL:
 
 1. **Multi-Tenant Vector Isolation:** 512-dimension vector embeddings stored in PostgreSQL via `pgvector`, hard-scoped by `school_id` and indexed with HNSW cosine distance indexes.
 2. **Polymorphic Chunk Ingestion:** Domain records (`Student`, `ManualPayment`, `CompliancePolicy`) are automatically formatted as structured Markdown summaries and embedded asynchronously on change.
@@ -44,7 +44,7 @@ Building upon the vector proximity foundation proven in [ADR-0002](file:///Users
 | **Testing & Quality** | Pest PHP & PHPStan | Comprehensive feature tests, PHPStan Level 8, and Laravel Pint. |
 
 > [!NOTE]
-> For complete instructions on spinning up the PostgreSQL Docker container, installing Ollama, or configuring `.env`, refer to **[ADR-0003: Environment Setup and Local Onboarding](file:///Users/bryanmiller/dev/apps/wt-vectors-example-slow/documentation/ADR-0003-environment-setup-and-local-onboarding.md)**.
+> For complete instructions on spinning up the PostgreSQL Docker container, installing Ollama, or configuring `.env`, refer to **[ADR-0003: Environment Setup and Local Onboarding](./ADR-0003-environment-setup-and-local-onboarding.md)**.
 
 ---
 

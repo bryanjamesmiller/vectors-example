@@ -86,7 +86,7 @@ ollama pull nomic-embed-text
 php artisan migrate:fresh --seed
 ```
 
-This runs all table migrations, enables the PostgreSQL `vector` extension, and populates the 18 trade school articles along with their pre-indexed 512d vector embeddings from [`database/seeders/data/articles.json`](file:///Users/bryanmiller/dev/apps/wt-vectors-example-slow/database/seeders/data/articles.json).
+This runs all table migrations, enables the PostgreSQL `vector` extension, and populates the 18 trade school articles along with their pre-indexed 512d vector embeddings from [`database/seeders/data/articles.json`](../database/seeders/data/articles.json).
 
 ---
 
