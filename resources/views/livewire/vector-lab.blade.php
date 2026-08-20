@@ -15,9 +15,27 @@
         </p>
     </div>
 
-    {{-- Preset Scenarios --}}
+    {{-- Preset Scenarios & AI Randomizer --}}
     <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider me-1">Try 1-Click Presets:</span>
+        <button
+            wire:click="randomizeScenario"
+            type="button"
+            wire:loading.attr="disabled"
+            wire:target="randomizeScenario"
+            class="px-3.5 py-1.5 text-xs font-semibold rounded-full border border-indigo-300 dark:border-indigo-700 bg-indigo-600 hover:bg-indigo-700 text-white transition shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+        >
+            <span wire:loading.remove wire:target="randomizeScenario" class="inline-flex items-center gap-1">
+                🎲 <span>AI Random Scenario</span>
+            </span>
+            <span wire:loading.inline-flex wire:target="randomizeScenario" class="items-center gap-1" style="display: none;">
+                <svg class="animate-spin size-3 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span>Generating...</span>
+            </span>
+        </button>
+        <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mx-1">Or Presets:</span>
         <button
             wire:click="loadPreset('welding')"
             type="button"

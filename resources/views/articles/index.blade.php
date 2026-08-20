@@ -35,7 +35,10 @@
                         type="submit"
                         class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer shrink-0 shadow-xs"
                     >
-                        <span>🧠 Semantic Search</span>
+                        <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        <span>Semantic Search</span>
                     </button>
                     @if ($search !== '')
                         <a
@@ -66,7 +69,9 @@
         @if ($search !== '')
             <div class="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 flex items-center justify-between gap-3 text-xs text-blue-900 dark:text-blue-200">
                 <div class="flex items-center gap-2">
-                    <span class="text-base">🔍</span>
+                    <svg class="size-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
                     <span>
                         Showing <strong>{{ $isVectorSearch ? 'AI vector similarity' : 'text keyword' }}</strong> search results for <strong>&ldquo;{{ $search }}&rdquo;</strong> ranked by nearest semantic proximity.
                     </span>

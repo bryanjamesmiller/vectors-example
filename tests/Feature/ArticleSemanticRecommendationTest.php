@@ -54,6 +54,16 @@ test('article casts audience to enum properly', function () {
     expect($article->audience)->toBe(Audience::Students);
 });
 
+test('homepage renders hero semantic search bar and quick search pills', function () {
+    $response = $this->get(route('home'));
+
+    $response->assertOk()
+        ->assertSee('Semantic Search')
+        ->assertSee('underwater welding')
+        ->assertSee('solar grants')
+        ->assertSee('electrical exam');
+});
+
 test('articles index page renders successfully with seeded articles', function () {
     $targetArticle = Article::where('is_published', true)->firstOrFail();
     $targetArticle->created_at = now()->addMinute();
