@@ -16,7 +16,7 @@
                         {{ __('Dashboard & Vectors') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="book-open-text" :href="route('articles.index')" target="_blank">
-                        {{ __('Public Knowledge Base') }}
+                        {{ __('Public Articles') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>

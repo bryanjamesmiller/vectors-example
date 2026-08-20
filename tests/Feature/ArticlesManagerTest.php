@@ -31,7 +31,7 @@ test('authenticated users can see the articles manager and metrics', function ()
     $this->actingAs($user)
         ->get(route('dashboard'))
         ->assertOk()
-        ->assertSee('Knowledge Base & Vector Index')
+        ->assertSee('Articles & Vector Index')
         ->assertSee('Real-Time OpenAI Vector Embeddings')
         ->assertSee('Welding Lab Safety Standards');
 });

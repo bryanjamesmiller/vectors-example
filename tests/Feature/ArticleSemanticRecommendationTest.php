@@ -62,7 +62,7 @@ test('articles index page renders successfully with seeded articles', function (
     $response = $this->get(route('articles.index'));
 
     $response->assertOk()
-        ->assertSee('Trade School Knowledge Base')
+        ->assertSee('Trade School Articles')
         ->assertSee($targetArticle->title);
 });
 

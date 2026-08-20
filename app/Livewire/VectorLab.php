@@ -153,13 +153,22 @@ class VectorLab extends Component
         if (! empty($this->generatedVector)) {
             $this->calculateNearestNeighbors($this->generatedVector);
 
-            Flux::toast(
-                text: __('Live 512d vector calculated in :ms ms via :provider!', [
-                    'ms' => $telemetryResult['latency_ms'],
-                    'provider' => $telemetryResult['provider'],
-                ]),
-                variant: 'success'
-            );
+            if ($telemetryResult['is_cached']) {
+                Flux::toast(
+                    text: __('⚡ 512d vector resolved from cache in :ms ms (SHA-256 content-hash match).', [
+                        'ms' => $telemetryResult['latency_ms'],
+                    ]),
+                    variant: 'info'
+                );
+            } else {
+                Flux::toast(
+                    text: __('🌐 Live 512d vector generated in :ms ms via :provider!', [
+                        'ms' => $telemetryResult['latency_ms'],
+                        'provider' => $telemetryResult['provider'],
+                    ]),
+                    variant: 'success'
+                );
+            }
         } else {
             Flux::toast(
                 text: __('Vector generation failed: :error', ['error' => $telemetryResult['error'] ?? 'Unknown error']),
@@ -244,7 +253,7 @@ class VectorLab extends Component
         $this->publishedArticleSlug = $article->slug;
 
         Flux::toast(
-            text: __('Published to live Knowledge Base! You can now view it live.'),
+            text: __('Published to live Articles! You can now view it live.'),
             variant: 'success'
         );
     }

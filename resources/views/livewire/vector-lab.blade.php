@@ -18,7 +18,7 @@
 
         <div class="flex items-center gap-3">
             <a href="{{ route('articles.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-750 transition shadow-xs">
-                &larr; Knowledge Base
+                &larr; Articles
             </a>
             <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 transition shadow-xs">
                 Admin Dashboard
@@ -288,7 +288,7 @@
                                     type="button"
                                     class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-xs cursor-pointer"
                                 >
-                                    💾 Publish to Live Knowledge Base
+                                    💾 Publish to Live Articles
                                 </button>
                             @endif
                         </div>

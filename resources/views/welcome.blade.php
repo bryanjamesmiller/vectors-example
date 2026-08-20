@@ -44,7 +44,7 @@
                     <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
-                    <span>Knowledge Base</span>
+                    <span>Articles</span>
                 </a>
 
                 @if (Route::has('login'))
@@ -90,9 +90,9 @@
                         href="{{ route('articles.index') }}"
                         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md hover:shadow-lg transition text-base"
                     >
-                        <span>Explore Knowledge Base</span>
+                        <span>Explore Articles</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                         </svg>
                     </a>
                     <a
@@ -105,11 +105,11 @@
             </div>
         </section>
 
-        <!-- Featured Showcase: Knowledge Base & Vector Recommendations -->
+        <!-- Featured Showcase: Articles & Vector Recommendations -->
         <section class="py-16 sm:py-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
                 <div class="text-center space-y-3 max-w-3xl mx-auto">
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Featured Knowledge Base</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Featured Articles</span>
                     <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
                         Great Trade School Articles — Relevant for All Trade Schools!
                     </h2>
@@ -233,7 +233,7 @@
                 &copy; {{ date('Y') }} Trade School AI. Built with Laravel 12, PostgreSQL 16 & pgvector.
             </div>
             <div class="flex items-center gap-4">
-                <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Knowledge Base</a>
+                <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Articles</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
                 <span class="font-mono">PHP 8.5</span>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>

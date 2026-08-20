@@ -3,14 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trade School Knowledge Base - {{ config('app.name') }}</title>
+    <title>Trade School Articles - {{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-full font-sans antialiased">
     <div class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8 space-y-8">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6 gap-4">
             <div>
-                <h1 class="text-3xl font-bold tracking-tight">Trade School Knowledge Base</h1>
+                <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
                 <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                     Browse guides with in-database vector recommendations powered by PostgreSQL & pgvector.
                 </p>

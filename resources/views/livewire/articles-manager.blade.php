@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                <span>Knowledge Base & Vector Index</span>
+                <span>Articles & Vector Index</span>
                 <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
                     <span class="size-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
                     pgvector 512d
@@ -19,7 +19,7 @@
                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                 </svg>
-                <span>View Public KB</span>
+                <span>View Public Articles</span>
             </a>
 
             <button wire:click="openCreateModal" type="button" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition shadow-xs">
@@ -75,7 +75,7 @@
             <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Published</span>
             <div class="mt-1 flex items-baseline justify-between">
                 <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $metrics['published'] }}</span>
-                <span class="text-xs text-zinc-500">Live in KB</span>
+                <span class="text-xs text-zinc-500">Live in Articles</span>
             </div>
         </div>
 
@@ -199,7 +199,7 @@
                                     <a
                                         href="{{ route('articles.show', $article) }}"
                                         target="_blank"
-                                        title="View Live in Knowledge Base"
+                                        title="View Live in Articles"
                                         class="p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                                     >
                                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -314,7 +314,7 @@
                                     class="sr-only peer"
                                 />
                                 <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-hidden peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer dark:bg-zinc-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-zinc-600 peer-checked:bg-blue-600"></div>
-                                <span class="ms-3 text-sm font-medium text-zinc-900 dark:text-zinc-300">Published to Knowledge Base</span>
+                                <span class="ms-3 text-sm font-medium text-zinc-900 dark:text-zinc-300">Published to Articles</span>
                             </label>
                         </div>
                     </div>
