@@ -30,7 +30,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index(['school_id', 'documentable_type']);
+            $table->unique(['school_id', 'documentable_type', 'documentable_id'], 'school_doc_embeddings_unique');
         });
 
         if (DB::getDriverName() === 'pgsql') {
