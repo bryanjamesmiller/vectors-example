@@ -78,6 +78,13 @@
                     </a>
                     <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
                     <a
+                        href="{{ route('payments') }}"
+                        class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1.5"
+                    >
+                        <span>Tuition Bill & Payments &rarr;</span>
+                    </a>
+                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
+                    <a
                         href="#architecture"
                         class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
                     >
@@ -215,6 +222,8 @@
             </div>
             <div class="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2">
                 <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Articles</a>
+                <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                <a href="{{ route('payments') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Tuition Bill</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
                 <a href="https://github.com/bryanjamesmiller/vectors-example" target="_blank" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Repository</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
