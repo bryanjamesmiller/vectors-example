@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - vector-first-steps
   pull_request:
 
 permissions:
@@ -12,6 +13,29 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: vectors_postgres_slow
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: vectors_postgres_slow
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
 
     steps:
       - name: Checkout code
