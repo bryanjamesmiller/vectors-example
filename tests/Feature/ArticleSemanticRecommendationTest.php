@@ -55,11 +55,15 @@ test('article casts audience to enum properly', function () {
 });
 
 test('articles index page renders successfully with seeded articles', function () {
+    $targetArticle = Article::where('is_published', true)->firstOrFail();
+    $targetArticle->created_at = now()->addMinute();
+    $targetArticle->save();
+
     $response = $this->get(route('articles.index'));
 
     $response->assertOk()
         ->assertSee('Trade School Knowledge Base')
-        ->assertSee('Applying for Trade Tool Grants &amp; Fee Waivers', false);
+        ->assertSee($targetArticle->title);
 });
 
 test('article show page renders article and related recommendations', function () {
