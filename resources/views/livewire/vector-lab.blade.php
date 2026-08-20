@@ -132,15 +132,18 @@
                         <button
                             type="submit"
                             wire:loading.attr="disabled"
-                            class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-xs cursor-pointer"
+                            wire:target="generateEmbedding"
+                            class="w-full relative inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition shadow-xs cursor-pointer"
                         >
-                            <span wire:loading.remove>🚀 Calculate Vector & Save Article</span>
-                            <span wire:loading class="inline-flex items-center gap-1.5">
-                                <svg class="animate-spin size-4" fill="none" viewBox="0 0 24 24">
+                            <span wire:loading.remove wire:target="generateEmbedding" class="inline-flex items-center gap-1.5">
+                                🚀 Calculate Vector &amp; Save Article
+                            </span>
+                            <span wire:loading.inline-flex wire:target="generateEmbedding" class="items-center justify-center gap-2" style="display: none;">
+                                <svg class="animate-spin size-4 shrink-0 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                                 </svg>
-                                <span>Generating Vector & Saving...</span>
+                                <span>Generating Vector &amp; Saving...</span>
                             </span>
                         </button>
                     </div>

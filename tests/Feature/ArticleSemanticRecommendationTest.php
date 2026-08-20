@@ -63,7 +63,36 @@ test('articles index page renders successfully with seeded articles', function (
 
     $response->assertOk()
         ->assertSee('Trade School Articles')
+        ->assertSee('Semantic Search')
         ->assertSee($targetArticle->title);
+});
+
+test('articles index page performs in-database semantic vector search and displays similarity match percentage', function () {
+    $targetArticle = Article::where('slug', 'personal-protective-equipment-ppe-guidelines-for-welding-labs')->firstOrFail();
+
+    $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('generateEmbedding')
+        ->with('hyperbaric welding safety protocols')
+        ->once()
+        ->andReturn($targetArticle->embedding->toArray());
+
+    $this->app->instance(EmbeddingService::class, $mockService);
+
+    $response = $this->get(route('articles.index', ['q' => 'hyperbaric welding safety protocols']));
+
+    $response->assertOk()
+        ->assertSee('AI vector similarity')
+        ->assertSee('hyperbaric welding safety protocols')
+        ->assertSee('100% Match')
+        ->assertSee('personal-protective-equipment-ppe-guidelines-for-welding-labs');
+});
+
+test('articles index search with empty query returns all published articles', function () {
+    $response = $this->get(route('articles.index', ['q' => '   ']));
+
+    $response->assertOk()
+        ->assertDontSee('AI vector similarity')
+        ->assertSee('Trade School Articles');
 });
 
 test('article show page renders article and related recommendations', function () {

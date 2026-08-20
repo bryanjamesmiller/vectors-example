@@ -21,8 +21,9 @@ The application is deployed live on **Laravel Cloud**:
 
 ## ⚡ Key Architectural Features
 
+* **In-Database Semantic Vector Search (`/articles`):** Natural language search powered by 512-dimension vector embeddings and PostgreSQL `<=>` cosine distance rather than traditional SQL `LIKE`/`ILIKE` substring matching. User queries (e.g., *"how to size electrical conduit"*, *"hyperbaric pressure protocols"*, *"FAFSA tool grants"*) are embedded on the fly and matched against the knowledge base by conceptual meaning, displaying real-time **`% Match`** scores on each result card.
 * **Interactive AI Vector Lab (`/vector-lab`):** An interactive playground to test live AI vector embeddings, inspect microsecond roundtrip latency, copy full 512d JSON matrices, and evaluate native PostgreSQL `<=>` cosine distance proximity rankings in real time.
-* **In-Database Vector Proximity (`pgvector`):** Uses native PostgreSQL vector cosine distance (`<=>`) with HNSW indexing for real-time, sub-millisecond semantic search and recommendations without external vector database dependencies.
+* **In-Database Vector Proximity Recommendations (`pgvector`):** Uses native PostgreSQL vector cosine distance (`<=>`) with HNSW indexing for real-time, sub-millisecond automated recommendations on article pages without external vector database dependencies.
 * **Dual-Engine & Configurable AI Embeddings:**
   * **Local Development (Default):** 100% free, offline, private embeddings powered by a local **Ollama** instance (`nomic-embed-text`).
   * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, truncated to 512 Matryoshka dimensions) with support for any OpenAI-compatible provider.
@@ -31,6 +32,30 @@ The application is deployed live on **Laravel Cloud**:
 * **Deterministic Seeding & Caching:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning in milliseconds with zero network or AI model calls.
 * **Unified Modern UI:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS with responsive, accessible navigation across desktop and mobile.
 * **Zero-Downtime Serverless Hosting:** Hosted on Laravel Cloud with Serverless Postgres (Dev configuration with Scale-to-Zero).
+
+---
+
+### 🔍 How In-Database Vector Search Works (vs. SQL `LIKE`)
+
+Traditional keyword searches rely on exact substring matching (`WHERE title ILIKE '%welding%'`), which completely fails when users ask questions, search with synonyms, or use conceptual descriptions (e.g., searching for *"financial aid for apprentices"* would miss articles titled *"Trade Tool Grants & Fee Waivers"*).
+
+With native `pgvector`, the search query is converted into a 512-dimension vector embedding and ordered directly in PostgreSQL using cosine distance (`<=>`):
+
+```php
+// 1. Convert natural language user search query into 512d vector
+$queryVector = $embeddingService->generateEmbedding($userSearchQuery);
+
+// 2. Query PostgreSQL pgvector index by cosine proximity (<=>)
+$articles = Article::query()
+    ->where('is_published', true)
+    ->whereNotNull('embedding')
+    ->selectRaw('articles.*, (articles.embedding <=> ?) as neighbor_distance', [new Vector($queryVector)])
+    ->orderBy('neighbor_distance')
+    ->paginate(9);
+```
+
+Each result calculates an intuitive similarity match percentage:
+$$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{neighbor\_distance}) \times 100))$$
 
 ---
 
