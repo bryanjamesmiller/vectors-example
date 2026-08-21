@@ -22,8 +22,10 @@ class PaymentProcessor
     /**
      * Process a payment charge through the specified gateway inside a database transaction.
      *
-     * Payment processing is wrapped in a database transaction to ensure that if any
-     * post-charge logging or ledger updates fail, no out-of-sync state persists.
+     * In this demonstration, processing is wrapped in a database transaction to ensure
+     * that any ledger or audit log mutations commit atomically. In a production billing
+     * system with live third-party SDKs, external charges use an idempotent intent key
+     * followed by a transactional ledger settlement commit.
      */
     public function process(PaymentProvider $provider, PaymentCharge $charge): PaymentResponse
     {

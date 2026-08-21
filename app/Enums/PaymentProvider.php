@@ -52,4 +52,26 @@ enum PaymentProvider: string
             self::PayPal => 'blue',
         };
     }
+
+    /**
+     * Get the badge pill label for UI display.
+     */
+    public function badgeText(): string
+    {
+        return match ($this) {
+            self::Stripe => 'Card / Apple Pay',
+            self::PayPal => 'Wallet / Pay in 4',
+        };
+    }
+
+    /**
+     * Get the Tailwind CSS badge class string for UI display.
+     */
+    public function badgeClasses(): string
+    {
+        return match ($this) {
+            self::Stripe => 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300',
+            self::PayPal => 'bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300',
+        };
+    }
 }

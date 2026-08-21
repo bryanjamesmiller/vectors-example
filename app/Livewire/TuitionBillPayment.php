@@ -6,10 +6,12 @@ namespace App\Livewire;
 
 use App\DTOs\PaymentCharge;
 use App\Enums\PaymentProvider;
+use App\Services\Payments\PaymentGatewayFactory;
 use App\Services\Payments\PaymentProcessor;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -20,6 +22,15 @@ class TuitionBillPayment extends Component
      * Currently selected payment provider value ('stripe' or 'paypal').
      */
     public string $selectedProvider = 'stripe';
+
+    /**
+     * Initialize default provider and currency from application configuration.
+     */
+    public function mount(PaymentGatewayFactory $gatewayFactory): void
+    {
+        $this->selectedProvider = $gatewayFactory->default()->provider()->value;
+        $this->bill['currency'] = (string) config('payments.currency', 'USD');
+    }
 
     /**
      * Student details for the tuition bill.
@@ -37,6 +48,7 @@ class TuitionBillPayment extends Component
      *     items: list<array{description: string, category: string, amount_in_cents: int}>
      * }
      */
+    #[Locked]
     public array $bill = [
         'name' => 'Marcus Vance',
         'student_id' => 'TS-88421',
@@ -133,7 +145,7 @@ class TuitionBillPayment extends Component
             ];
 
             Flux::toast(
-                text: "Payment of \${$this->paymentReceipt['amount_formatted']} successfully processed via {$response->provider->label()}!",
+                text: "Payment of {$this->paymentReceipt['amount_formatted']} successfully processed via {$response->provider->label()}!",
                 variant: 'success'
             );
         } else {

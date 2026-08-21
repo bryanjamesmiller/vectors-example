@@ -175,5 +175,5 @@ class PaymentProcessor
 
 1. **Liskov Substitution Testing:** Pest tests verify that all implementations of `PaymentGatewayInterface` return uniform `PaymentResponse` objects given identical `PaymentCharge` inputs.
 2. **Provider Swapping Verification:** Test cases verify switching `selectedProvider` between `Stripe` and `PayPal` successfully dispatches to the corresponding gateway.
-3. **Validation & Boundary Testing:** Livewire component tests reject invalid provider payloads and verify transactional rollback behavior.
+3. **Validation & Error Handling Testing:** Livewire component tests reject invalid provider payloads and verify that failed payment responses keep the bill in an unpaid state with user-facing error reporting.
 4. **Code Quality:** All PHP files declare `strict_types=1`, format with Laravel Pint, and pass PHPStan at Level 8.

@@ -98,7 +98,7 @@ Start a PostgreSQL container with `pgvector` enabled:
 docker run -d \
   --name pgvector-db \
   -e POSTGRES_PASSWORD=secret \
-  -e POSTGRES_DB=vectors_postgres_fast \
+  -e POSTGRES_DB=vectors_postgres_slow \
   -p 5432:5432 \
   pgvector/pgvector:pg16
 

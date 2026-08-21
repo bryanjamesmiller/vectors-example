@@ -118,3 +118,50 @@ test('PaymentProcessor wraps charge execution and returns uniform response DTO',
         ->and($response->provider)->toBe(PaymentProvider::Stripe)
         ->and($response->transactionId)->toStartWith('ch_stripe_');
 });
+
+test('TuitionBillPayment initializes default provider and currency from configuration', function () {
+    config()->set('payments.default', 'paypal');
+    config()->set('payments.currency', 'CAD');
+
+    Livewire::test(TuitionBillPayment::class)
+        ->assertSet('selectedProvider', 'paypal')
+        ->assertSet('bill.currency', 'CAD');
+});
+
+test('payment failure response keeps bill in unpaid state and reports error', function () {
+    $mockGateway = Mockery::mock(PaymentGatewayInterface::class);
+    $mockGateway->shouldReceive('charge')
+        ->once()
+        ->andReturn(PaymentResponse::failure(
+            provider: PaymentProvider::Stripe,
+            amountInCents: 125000,
+            currency: 'USD',
+            message: 'Card declined: Insufficient funds.'
+        ));
+    $mockGateway->shouldReceive('provider')
+        ->andReturn(PaymentProvider::Stripe);
+
+    $mockFactory = Mockery::mock(PaymentGatewayFactory::class);
+    $mockFactory->shouldReceive('make')
+        ->with(PaymentProvider::Stripe)
+        ->andReturn($mockGateway);
+    $mockFactory->shouldReceive('default')
+        ->andReturn($mockGateway);
+
+    $this->app->instance(PaymentGatewayFactory::class, $mockFactory);
+
+    Livewire::test(TuitionBillPayment::class)
+        ->set('selectedProvider', 'stripe')
+        ->call('processPayment')
+        ->assertSet('isPaid', false)
+        ->assertSet('paymentReceipt', null)
+        ->assertDontSee('PAID IN FULL');
+});
+
+test('PaymentGatewayFactory throws ValueError when default configuration provider is invalid', function () {
+    config()->set('payments.default', 'invalid_provider_name');
+
+    $factory = app(PaymentGatewayFactory::class);
+
+    expect(fn () => $factory->default())->toThrow(ValueError::class);
+});

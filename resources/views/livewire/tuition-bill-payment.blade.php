@@ -149,10 +149,10 @@
                 @else
                     {{-- Payment Method Selection Form --}}
                     <form wire:submit="processPayment" class="space-y-6">
-                        <div class="space-y-3">
-                            <label class="text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block">
+                        <fieldset class="space-y-3">
+                            <legend class="text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 block">
                                 Select Payment Method
-                            </label>
+                            </legend>
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 @foreach ($providers as $provider)
@@ -172,15 +172,9 @@
                                                 </span>
                                             </div>
 
-                                            @if ($provider->value === 'stripe')
-                                                <span class="px-2 py-0.5 text-2xs font-semibold rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
-                                                    Card / Apple Pay
-                                                </span>
-                                            @else
-                                                <span class="px-2 py-0.5 text-2xs font-semibold rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-                                                    Wallet / Pay in 4
-                                                </span>
-                                            @endif
+                                            <span class="px-2 py-0.5 text-2xs font-semibold rounded {{ $provider->badgeClasses() }}">
+                                                {{ $provider->badgeText() }}
+                                            </span>
                                         </div>
 
                                         <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-400 pl-7 leading-relaxed">
@@ -192,7 +186,7 @@
                             @error('selectedProvider')
                                 <span class="text-xs text-red-500 font-medium">{{ $message }}</span>
                             @enderror
-                        </div>
+                        </fieldset>
 
                         {{-- Action Buttons --}}
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
