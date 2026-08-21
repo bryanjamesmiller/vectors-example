@@ -21,42 +21,38 @@ The application is deployed live on **Laravel Cloud**:
 
 ## ⚡ Key Architectural Features
 
-* **In-Database Semantic Vector Search (`/articles`):** Natural language search powered by 512-dimension vector embeddings and PostgreSQL `<=>` cosine distance rather than SQL `LIKE`/`ILIKE` substring matching. User queries are embedded on the fly and matched against the knowledge base by conceptual meaning, displaying real-time **`% Match`** scores on each result card.
-* **Interactive AI Vector Lab (`/vector-lab`):** An interactive playground to test live AI vector embeddings, inspect roundtrip latency, copy 512d JSON matrices, and evaluate PostgreSQL `<=>` cosine distance proximity rankings in real time.
-* **Swappable Multi-Payment Gateway Architecture (`/payments`):** Demonstrates SOLID principles and the Strategy pattern with an Enum-driven factory for trade school tuition billing, supporting swappable payment gateways (Stripe, PayPal) wrapped in database transactions.
-* **In-Database Vector Proximity Recommendations (`pgvector`):** Uses PostgreSQL vector cosine distance (`<=>`) with HNSW indexing for real-time automated recommendations on article pages without external vector database dependencies.
-* **Dual-Engine AI Embeddings:**
-  * **Local Development (Default):** Offline embeddings powered by a local **Ollama** instance (`nomic-embed-text`).
-  * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, 512 Matryoshka dimensions) with support for any OpenAI-compatible provider.
-* **SHA-256 Content Caching & Quota Protection:** Fingerprints text inputs using SHA-256 hashes for instant cache hits, backed by per-IP rate limiting guards (15 req/min) on outbound live API calls.
-* **Vector Persistence & Publishing:** Calculating vectors in the Vector Lab persists articles to PostgreSQL, displaying them in the public Articles catalog and indexing them for recommendations.
-* **Deterministic Seeding:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning with zero network or AI model calls.
-* **Modern UI:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS.
-* **Serverless Hosting:** Deployed on Laravel Cloud (Serverless PostgreSQL 17).
-
----
-
-### 🔍 How In-Database Vector Search Works (vs. SQL `LIKE`)
+### 1. Semantic Vector Search (vs. Lexical String Matching)
 
 Traditional keyword searches rely on exact substring matching (`WHERE title ILIKE '%welding%'`), which fails when users search with synonyms or conceptual descriptions (e.g., searching for *"financial aid for apprentices"* misses articles titled *"Trade Tool Grants & Fee Waivers"*).
 
-With native `pgvector`, the search query is converted into a 512-dimension vector embedding and ordered in PostgreSQL using cosine distance (`<=>`):
+* **On-the-Fly Query Vectorization:** Incoming search queries (`/articles?q=...`) are converted into 512-dimension vector embeddings at runtime.
+* **In-Database Cosine Ordering:** Queries PostgreSQL directly using the `<=>` cosine distance operator against indexed `vector(512)` columns.
+* **Normalized Match Scores:** Converts raw distance into human-readable relevance percentage scores on result cards:
+  $$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{distance}) \times 100))$$
 
-```php
-// 1. Convert natural language user search query into 512d vector
-$queryVector = $embeddingService->generateEmbedding($userSearchQuery);
+### 2. In-Database Proximity Recommendations
 
-// 2. Query PostgreSQL pgvector index by cosine proximity (<=>)
-$articles = Article::query()
-    ->where('is_published', true)
-    ->whereNotNull('embedding')
-    ->selectRaw('articles.*, (articles.embedding <=> ?) as neighbor_distance', [new Vector($queryVector)])
-    ->orderBy('neighbor_distance')
-    ->paginate(9);
-```
+Generates related trade school article recommendations natively within PostgreSQL without external vector databases (Pinecone/Milvus) or runtime LLM inference latency.
 
-Each result calculates an intuitive similarity match percentage:
-$$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{distance}) \times 100))$$
+* **HNSW Indexing:** Employs hierarchical navigable small world (`USING hnsw (embedding vector_cosine_ops)`) indexes for sub-millisecond nearest-neighbor retrieval.
+* **Hybrid Relational Filtering:** Blends vector proximity with standard relational SQL constraints (e.g., audience scoping for students, teachers, or alumni).
+* **Zero External Dependencies:** Eliminates external vector synchronization pipelines, network hops, and third-party SaaS billing.
+
+### 3. Interactive AI Vector Lab & Live Ingestion (`/vector-lab`)
+
+An interactive workbench to generate embeddings, inspect raw vector representations, and persist new articles directly to the database.
+
+* **Dual-Engine Pipeline:** Runs offline via local **Ollama** (`nomic-embed-text`) in development, and cloud **OpenAI** (`text-embedding-3-small`, 512 Matryoshka dimensions) in production.
+* **SHA-256 Fingerprint Caching:** Caches vectors by content hash for instant cache hits, backed by per-IP rate limiting (15 req/min) on outbound live API calls.
+* **Live Ingestion & Dynamic Interconnection:** Calculating vectors in the lab persists articles to PostgreSQL, immediately indexing them and linking them to neighboring articles via vector proximity.
+
+### 4. Swappable Multi-Payment Gateway Architecture (`/payments`)
+
+An enterprise tuition billing portal demonstrating SOLID principles and the Strategy pattern for decoupled third-party integrations.
+
+* **Strategy & Factory Pattern:** Decouples gateway providers (Stripe, PayPal) behind `PaymentGatewayInterface` and an Enum-driven `PaymentGatewayFactory` for zero-modification extensibility.
+* **Transactional Integrity:** Wraps payment processing and ledger updates in `DB::transaction` to prevent out-of-sync financial records.
+* **Liskov Substitution & DTOs:** Strongly-typed input (`PaymentCharge`) and output (`PaymentResponse`) DTOs ensure all gateway drivers are interchangeable without provider-specific exception leaks.
 
 ---
 
