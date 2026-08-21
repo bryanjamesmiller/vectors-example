@@ -32,7 +32,7 @@ The application is deployed live on **Laravel Cloud**:
 * **Vector Persistence & Publishing:** Calculating vectors in the Vector Lab persists articles to PostgreSQL, displaying them in the public Articles catalog and indexing them for recommendations.
 * **Deterministic Seeding:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning with zero network or AI model calls.
 * **Modern UI:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS.
-* **Serverless Hosting:** Deployed on Laravel Cloud with PostgreSQL.
+* **Serverless Hosting:** Deployed on Laravel Cloud (Serverless PostgreSQL 17).
 
 ---
 
@@ -67,7 +67,7 @@ $$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{distance}) \times 100
 * **Database & Vectors:** PostgreSQL (16/17) with [`pgvector`](https://github.com/pgvector/pgvector) and `pgvector/pgvector-php`
 * **AI & Embeddings:** [OpenAI PHP](https://github.com/openai-php/laravel) & [Ollama](https://ollama.com)
 * **Testing & Quality:** [Pest PHP](https://pestphp.com), [Larastan / PHPStan (Level 8)](https://github.com/larastan/larastan), [Laravel Pint](https://laravel.com/docs/pint)
-* **Hosting:** [Laravel Cloud](https://cloud.laravel.com)
+* **Hosting:** [Laravel Cloud](https://cloud.laravel.com) (Serverless PostgreSQL 17)
 
 ---
 
