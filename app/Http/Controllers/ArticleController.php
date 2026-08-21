@@ -28,7 +28,9 @@ class ArticleController extends Controller
             $rateLimitKey = 'search-embedding:'.($request->ip() ?? 'unknown');
             $queryEmbedding = [];
 
-            if (! RateLimiter::tooManyAttempts($rateLimitKey, 30)) {
+            if ($embeddingService->isCached($search)) {
+                $queryEmbedding = $embeddingService->generateEmbedding($search);
+            } elseif (! RateLimiter::tooManyAttempts($rateLimitKey, 30)) {
                 RateLimiter::hit($rateLimitKey, 60);
                 $queryEmbedding = $embeddingService->generateEmbedding($search);
             }

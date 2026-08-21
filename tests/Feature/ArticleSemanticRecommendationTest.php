@@ -82,6 +82,7 @@ test('articles index page performs in-database semantic vector search and displa
     $targetArticle = Article::where('slug', 'personal-protective-equipment-ppe-guidelines-for-welding-labs')->firstOrFail();
 
     $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->with('hyperbaric welding safety protocols')->andReturn(false);
     $mockService->shouldReceive('generateEmbedding')
         ->with('hyperbaric welding safety protocols')
         ->once()
@@ -121,6 +122,11 @@ test('articles index falls back to text keyword search when embedding rate limit
         RateLimiter::hit($key, 60);
     }
 
+    $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->with('Welding')->andReturn(false);
+    $mockService->shouldNotReceive('generateEmbedding');
+    $this->app->instance(EmbeddingService::class, $mockService);
+
     $response = $this->get(route('articles.index', ['q' => 'Welding']));
 
     $response->assertOk()
@@ -129,9 +135,33 @@ test('articles index falls back to text keyword search when embedding rate limit
         ->assertSee('Personal Protective Equipment (PPE) Guidelines for Welding Labs');
 });
 
+test('articles index allows cached vector searches even when rate limit is exceeded', function () {
+    $targetArticle = Article::where('slug', 'personal-protective-equipment-ppe-guidelines-for-welding-labs')->firstOrFail();
+
+    $key = 'search-embedding:127.0.0.1';
+    RateLimiter::clear($key);
+
+    for ($i = 0; $i < 30; $i++) {
+        RateLimiter::hit($key, 60);
+    }
+
+    $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->with('hyperbaric welding safety')->andReturn(true);
+    $mockService->shouldReceive('generateEmbedding')->with('hyperbaric welding safety')->once()->andReturn($targetArticle->embedding->toArray());
+    $this->app->instance(EmbeddingService::class, $mockService);
+
+    $response = $this->get(route('articles.index', ['q' => 'hyperbaric welding safety']));
+
+    $response->assertOk()
+        ->assertSee('AI vector similarity')
+        ->assertSee('100% Match')
+        ->assertDontSee('text keyword');
+});
+
 test('articles index displays distinct empty states for empty search results versus empty database catalog', function () {
     // 1. Search with no keyword matches (when embedding is unavailable or returns no keyword matches)
     $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->andReturn(false);
     $mockService->shouldReceive('generateEmbedding')
         ->andReturn([]);
     $this->app->instance(EmbeddingService::class, $mockService);

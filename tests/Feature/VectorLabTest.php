@@ -9,8 +9,10 @@ use App\Services\Ai\EmbeddingService;
 use App\Services\Ai\ScenarioService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Livewire;
+use OpenAI\Laravel\Facades\OpenAI;
 use Pgvector\Laravel\Vector;
 
 test('vector lab page is publicly accessible without login', function () {
@@ -107,6 +109,26 @@ test('ScenarioService getRandomFallbackScenario returns a valid scenario array',
 test('ScenarioService falls back when OpenAI is not configured', function () {
     config(['openai.api_key' => null]);
     $scenario = (new ScenarioService)->generateRandomScenario();
+
+    expect($scenario)->toHaveKeys(['title', 'audience', 'summary', 'content'])
+        ->and($scenario['title'])->not->toBeEmpty()
+        ->and($scenario['content'])->not->toBeEmpty();
+});
+
+test('ScenarioService reports exception and returns fallback when OpenAI throws during generation', function () {
+    config(['openai.api_key' => 'sk-test-key-12345']);
+
+    Exceptions::fake();
+
+    OpenAI::fake([
+        new RuntimeException('OpenAI API service unavailable'),
+    ]);
+
+    $scenario = (new ScenarioService)->generateRandomScenario();
+
+    Exceptions::assertReported(function (RuntimeException $e): bool {
+        return $e->getMessage() === 'OpenAI API service unavailable';
+    });
 
     expect($scenario)->toHaveKeys(['title', 'audience', 'summary', 'content'])
         ->and($scenario['title'])->not->toBeEmpty()
