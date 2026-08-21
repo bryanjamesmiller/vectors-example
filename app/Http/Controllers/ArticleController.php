@@ -8,6 +8,7 @@ use App\Models\Article;
 use App\Services\Ai\EmbeddingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Pgvector\Laravel\Vector;
 
 class ArticleController extends Controller
@@ -17,11 +18,22 @@ class ArticleController extends Controller
      */
     public function index(Request $request, EmbeddingService $embeddingService): View
     {
-        $search = trim((string) $request->query('q', $request->query('search', '')));
+        $q = $request->query('q');
+        $legacy = $request->query('search');
+        $rawSearch = is_string($q) ? $q : (is_string($legacy) ? $legacy : '');
+        $search = trim(mb_substr($rawSearch, 0, 255));
         $isVectorSearch = false;
 
         if ($search !== '') {
-            $queryEmbedding = $embeddingService->generateEmbedding($search);
+            $rateLimitKey = 'search-embedding:'.($request->ip() ?? 'unknown');
+            $queryEmbedding = [];
+
+            if ($embeddingService->isCached($search)) {
+                $queryEmbedding = $embeddingService->generateEmbedding($search);
+            } elseif (! RateLimiter::tooManyAttempts($rateLimitKey, 30)) {
+                RateLimiter::hit($rateLimitKey, 60);
+                $queryEmbedding = $embeddingService->generateEmbedding($search);
+            }
 
             if (! empty($queryEmbedding)) {
                 $isVectorSearch = true;

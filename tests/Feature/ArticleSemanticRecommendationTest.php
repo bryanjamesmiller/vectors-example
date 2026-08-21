@@ -9,6 +9,7 @@ use App\Services\Ai\EmbeddingService;
 use Database\Seeders\ArticleSeeder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\RateLimiter;
 
 beforeEach(function () {
     $this->seed(ArticleSeeder::class);
@@ -81,6 +82,7 @@ test('articles index page performs in-database semantic vector search and displa
     $targetArticle = Article::where('slug', 'personal-protective-equipment-ppe-guidelines-for-welding-labs')->firstOrFail();
 
     $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->with('hyperbaric welding safety protocols')->andReturn(false);
     $mockService->shouldReceive('generateEmbedding')
         ->with('hyperbaric welding safety protocols')
         ->once()
@@ -103,6 +105,78 @@ test('articles index search with empty query returns all published articles', fu
     $response->assertOk()
         ->assertDontSee('AI vector similarity')
         ->assertSee('Trade School Articles');
+});
+
+test('articles index safely handles array-valued query parameters without throwing errors', function () {
+    $response = $this->get('/articles?q[]=welding&q[]=safety');
+
+    $response->assertOk()
+        ->assertSee('Trade School Articles');
+});
+
+test('articles index falls back to text keyword search when embedding rate limit is reached', function () {
+    $key = 'search-embedding:127.0.0.1';
+    RateLimiter::clear($key);
+
+    for ($i = 0; $i < 30; $i++) {
+        RateLimiter::hit($key, 60);
+    }
+
+    $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->with('Welding')->andReturn(false);
+    $mockService->shouldNotReceive('generateEmbedding');
+    $this->app->instance(EmbeddingService::class, $mockService);
+
+    $response = $this->get(route('articles.index', ['q' => 'Welding']));
+
+    $response->assertOk()
+        ->assertSee('text keyword')
+        ->assertDontSee('AI vector similarity')
+        ->assertSee('Personal Protective Equipment (PPE) Guidelines for Welding Labs');
+});
+
+test('articles index allows cached vector searches even when rate limit is exceeded', function () {
+    $targetArticle = Article::where('slug', 'personal-protective-equipment-ppe-guidelines-for-welding-labs')->firstOrFail();
+
+    $key = 'search-embedding:127.0.0.1';
+    RateLimiter::clear($key);
+
+    for ($i = 0; $i < 30; $i++) {
+        RateLimiter::hit($key, 60);
+    }
+
+    $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->with('hyperbaric welding safety')->andReturn(true);
+    $mockService->shouldReceive('generateEmbedding')->with('hyperbaric welding safety')->once()->andReturn($targetArticle->embedding->toArray());
+    $this->app->instance(EmbeddingService::class, $mockService);
+
+    $response = $this->get(route('articles.index', ['q' => 'hyperbaric welding safety']));
+
+    $response->assertOk()
+        ->assertSee('AI vector similarity')
+        ->assertSee('100% Match')
+        ->assertDontSee('text keyword');
+});
+
+test('articles index displays distinct empty states for empty search results versus empty database catalog', function () {
+    // 1. Search with no keyword matches (when embedding is unavailable or returns no keyword matches)
+    $mockService = Mockery::mock(EmbeddingService::class);
+    $mockService->shouldReceive('isCached')->andReturn(false);
+    $mockService->shouldReceive('generateEmbedding')
+        ->andReturn([]);
+    $this->app->instance(EmbeddingService::class, $mockService);
+
+    $response = $this->get(route('articles.index', ['q' => 'nonexistentquery123xyz']));
+    $response->assertOk()
+        ->assertSee('No articles matched your search query.')
+        ->assertSee('Clear Search');
+
+    // 2. Empty catalog with no published articles
+    Article::query()->delete();
+    $emptyCatalogResponse = $this->get(route('articles.index'));
+    $emptyCatalogResponse->assertOk()
+        ->assertSee('No published articles found.')
+        ->assertDontSee('Clear Search');
 });
 
 test('article show page renders article and related recommendations', function () {

@@ -12,6 +12,23 @@ use Throwable;
 class EmbeddingService
 {
     /**
+     * Determine whether an embedding is already cached for the given text.
+     */
+    public function isCached(string $text): bool
+    {
+        $cleaned = trim((string) preg_replace('/\s+/', ' ', $text));
+        if ($cleaned === '') {
+            return false;
+        }
+
+        $model = (string) config('ai.embedding.model', 'text-embedding-3-small');
+        $dimensions = (int) config('ai.embedding.dimensions', 512);
+        $cacheKey = 'ai_embedding:'.hash('sha256', "{$model}:{$dimensions}:{$cleaned}");
+
+        return Cache::has($cacheKey);
+    }
+
+    /**
      * Convert text into a 512-dimension float array using OpenAI embeddings with content-hash caching.
      *
      * @return list<float>

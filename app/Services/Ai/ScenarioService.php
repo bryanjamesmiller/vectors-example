@@ -152,8 +152,8 @@ class ScenarioService
                     'content' => (string) $data['content'],
                 ];
             }
-        } catch (Throwable) {
-            // Gracefully fall back to rich curated pool on network or rate limit failure
+        } catch (Throwable $exception) {
+            report($exception);
         }
 
         return $this->getRandomFallbackScenario();

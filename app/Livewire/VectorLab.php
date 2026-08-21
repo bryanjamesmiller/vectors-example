@@ -48,7 +48,13 @@ class VectorLab extends Component
      */
     public function randomizeScenario(ScenarioService $scenarioService): void
     {
-        $scenario = $scenarioService->generateRandomScenario();
+        $key = 'vector-lab-scenario:'.(request()->ip() ?? 'unknown');
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            $scenario = $scenarioService->getRandomFallbackScenario();
+        } else {
+            RateLimiter::hit($key, 60);
+            $scenario = $scenarioService->generateRandomScenario();
+        }
 
         $this->title = $scenario['title'];
         $this->audience = $scenario['audience'];
