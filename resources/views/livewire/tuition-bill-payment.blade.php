@@ -118,18 +118,18 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs border-t border-emerald-200 dark:border-emerald-800/80">
-                            <div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 text-xs border-t border-emerald-200 dark:border-emerald-800/80">
+                            <div class="min-w-0">
                                 <span class="text-emerald-700 dark:text-emerald-400 font-medium block">Transaction ID</span>
-                                <span class="font-mono font-bold text-emerald-900 dark:text-emerald-200">{{ $paymentReceipt['transaction_id'] }}</span>
+                                <span class="font-mono font-bold text-emerald-900 dark:text-emerald-200 break-all select-all block">{{ $paymentReceipt['transaction_id'] }}</span>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <span class="text-emerald-700 dark:text-emerald-400 font-medium block">Gateway Provider</span>
-                                <span class="font-semibold text-emerald-900 dark:text-emerald-200">{{ $paymentReceipt['provider_label'] }}</span>
+                                <span class="font-semibold text-emerald-900 dark:text-emerald-200 block truncate">{{ $paymentReceipt['provider_label'] }}</span>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <span class="text-emerald-700 dark:text-emerald-400 font-medium block">Timestamp</span>
-                                <span class="text-emerald-900 dark:text-emerald-200">{{ $paymentReceipt['processed_at'] }}</span>
+                                <span class="text-emerald-900 dark:text-emerald-200 block truncate">{{ $paymentReceipt['processed_at'] }}</span>
                             </div>
                         </div>
 
