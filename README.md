@@ -38,13 +38,13 @@ Generates related trade school article recommendations natively within PostgreSQ
 * **Hybrid Relational Filtering:** Blends vector proximity with standard relational SQL constraints (e.g., audience scoping for students, teachers, or alumni).
 * **Zero External Dependencies:** Eliminates external vector synchronization pipelines, network hops, and third-party SaaS billing.
 
-### 3. Interactive AI Vector Lab & Live Ingestion (`/vector-lab`)
+### 3. Interactive AI Vector Lab & Live Vector Generation (`/vector-lab`)
 
 An interactive workbench to generate embeddings, inspect raw vector representations, and persist new articles directly to the database.
 
 * **Dual-Engine Pipeline:** Runs offline via local **Ollama** (`nomic-embed-text`) in development, and cloud **OpenAI** (`text-embedding-3-small`, 512 Matryoshka dimensions) in production.
 * **SHA-256 Fingerprint Caching:** Caches vectors by content hash for instant cache hits, backed by per-IP rate limiting (15 req/min) on outbound live API calls.
-* **Live Ingestion & Dynamic Interconnection:** Calculating vectors in the lab persists articles to PostgreSQL, immediately indexing them and linking them to neighboring articles via vector proximity.
+* **Vector Generation & Publishing:** Calculating vectors in the lab persists articles to PostgreSQL, immediately indexing them and linking them to neighboring articles via vector proximity.
 
 ### 4. Swappable Multi-Payment Gateway Architecture (`/payments`)
 
