@@ -7,7 +7,7 @@
 [![Pest Tests](https://img.shields.io/badge/Tests-Pest%20%E2%9C%94-brightgreen?style=flat-square)](https://pestphp.com)
 [![PHPStan](https://img.shields.io/badge/PHPStan-Level%208-blue?style=flat-square)](https://phpstan.org)
 
-An enterprise trade school knowledge base demonstrating **in-database vector embeddings**, **sub-millisecond semantic similarity search**, and **RAG-ready article recommendations** natively inside PostgreSQL using `pgvector` and Laravel.
+A trade school knowledge base demonstrating **in-database vector embeddings**, **semantic similarity search**, and **RAG-ready article recommendations** inside PostgreSQL using `pgvector` and Laravel.
 
 ---
 
@@ -21,41 +21,38 @@ The application is deployed live on **Laravel Cloud**:
 
 ## ⚡ Key Architectural Features
 
-* **In-Database Semantic Vector Search (`/articles`):** Natural language search powered by 512-dimension vector embeddings and PostgreSQL `<=>` cosine distance rather than traditional SQL `LIKE`/`ILIKE` substring matching. User queries (e.g., *"how to size electrical conduit"*, *"hyperbaric pressure protocols"*, *"FAFSA tool grants"*) are embedded on the fly and matched against the knowledge base by conceptual meaning, displaying real-time **`% Match`** scores on each result card.
-* **Interactive AI Vector Lab (`/vector-lab`):** An interactive playground to test live AI vector embeddings, inspect microsecond roundtrip latency, copy full 512d JSON matrices, and evaluate native PostgreSQL `<=>` cosine distance proximity rankings in real time.
-* **In-Database Vector Proximity Recommendations (`pgvector`):** Uses native PostgreSQL vector cosine distance (`<=>`) with HNSW indexing for real-time, sub-millisecond automated recommendations on article pages without external vector database dependencies.
-* **Dual-Engine & Configurable AI Embeddings:**
-  * **Local Development (Default):** 100% free, offline, private embeddings powered by a local **Ollama** instance (`nomic-embed-text`).
-  * **Cloud / Production:** Managed cloud embeddings via **OpenAI** (`text-embedding-3-small`, truncated to 512 Matryoshka dimensions) with support for any OpenAI-compatible provider.
-* **SHA-256 Text Fingerprint Caching & Quota Protection:** Automatically fingerprints text inputs using SHA-256 hashes for `<1ms` cache hits, backed by per-IP rate limiting guards (15 req/min) on outbound live API calls.
-* **Automatic Vector Persistence & Publishing:** Calculating vectors in the Vector Lab automatically creates and persists articles directly to PostgreSQL, immediately displaying them in the public Articles catalog and indexing them for semantic recommendations.
-* **Deterministic Seeding & Caching:** Pre-computed 512-dimension vectors in seed fixtures allow instant environment provisioning in milliseconds with zero network or AI model calls.
-* **Unified Modern UI:** Built with Laravel, Livewire 4, Flux UI, and Tailwind CSS with responsive, accessible navigation across desktop and mobile.
-* **Zero-Downtime Serverless Hosting:** Hosted on Laravel Cloud with Serverless Postgres (Dev configuration with Scale-to-Zero).
+### 1. Semantic Vector Search (vs. Lexical String Matching)
 
----
+Traditional keyword searches rely on exact substring matching (`WHERE title ILIKE '%welding%'`), which fails when users search with synonyms or conceptual descriptions (e.g., searching for *"financial aid for apprentices"* misses articles titled *"Trade Tool Grants & Fee Waivers"*).
 
-### 🔍 How In-Database Vector Search Works (vs. SQL `LIKE`)
+* **On-the-Fly Query Vectorization:** Incoming search queries (`/articles?q=...`) are converted into 512-dimension vector embeddings at runtime.
+* **In-Database Cosine Ordering:** Queries PostgreSQL directly using the `<=>` cosine distance operator against indexed `vector(512)` columns.
+* **Normalized Match Scores:** Converts raw distance into human-readable relevance percentage scores on result cards:
+  $$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{distance}) \times 100))$$
 
-Traditional keyword searches rely on exact substring matching (`WHERE title ILIKE '%welding%'`), which completely fails when users ask questions, search with synonyms, or use conceptual descriptions (e.g., searching for *"financial aid for apprentices"* would miss articles titled *"Trade Tool Grants & Fee Waivers"*).
+### 2. In-Database Proximity Recommendations
 
-With native `pgvector`, the search query is converted into a 512-dimension vector embedding and ordered directly in PostgreSQL using cosine distance (`<=>`):
+Generates related trade school article recommendations natively within PostgreSQL without external vector databases (Pinecone/Milvus) or runtime LLM inference latency.
 
-```php
-// 1. Convert natural language user search query into 512d vector
-$queryVector = $embeddingService->generateEmbedding($userSearchQuery);
+* **HNSW Indexing:** Employs hierarchical navigable small world (`USING hnsw (embedding vector_cosine_ops)`) indexes for sub-millisecond nearest-neighbor retrieval.
+* **Hybrid Relational Filtering:** Blends vector proximity with standard relational SQL constraints (e.g., audience scoping for students, teachers, or alumni).
+* **Zero External Dependencies:** Eliminates external vector synchronization pipelines, network hops, and third-party SaaS billing.
 
-// 2. Query PostgreSQL pgvector index by cosine proximity (<=>)
-$articles = Article::query()
-    ->where('is_published', true)
-    ->whereNotNull('embedding')
-    ->selectRaw('articles.*, (articles.embedding <=> ?) as neighbor_distance', [new Vector($queryVector)])
-    ->orderBy('neighbor_distance')
-    ->paginate(9);
-```
+### 3. Interactive AI Vector Lab & Live Vector Generation (`/vector-lab`)
 
-Each result calculates an intuitive similarity match percentage:
-$$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{neighbor\_distance}) \times 100))$$
+An interactive workbench to generate embeddings, inspect raw vector representations, and persist new articles directly to the database.
+
+* **Dual-Engine Pipeline:** Runs offline via local **Ollama** (`nomic-embed-text`) in development, and cloud **OpenAI** (`text-embedding-3-small`, 512 Matryoshka dimensions) in production.
+* **SHA-256 Fingerprint Caching:** Caches vectors by content hash for instant cache hits, backed by per-IP rate limiting (15 req/min) on outbound live API calls.
+* **Vector Generation & Publishing:** Calculating vectors in the lab persists articles to PostgreSQL, immediately indexing them and linking them to neighboring articles via vector proximity.
+
+### 4. Swappable Multi-Payment Gateway Architecture (`/payments`)
+
+An enterprise tuition billing portal demonstrating SOLID principles and the Strategy pattern for decoupled third-party integrations.
+
+* **Strategy & Factory Pattern:** Decouples gateway providers (Stripe, PayPal) behind `PaymentGatewayInterface` and an Enum-driven `PaymentGatewayFactory` for zero-modification extensibility.
+* **Transactional Integrity:** Wraps payment processing and ledger updates in `DB::transaction` to prevent out-of-sync financial records.
+* **Liskov Substitution & DTOs:** Strongly-typed input (`PaymentCharge`) and output (`PaymentResponse`) DTOs ensure all gateway drivers are interchangeable without provider-specific exception leaks.
 
 ---
 
@@ -66,7 +63,7 @@ $$\text{Match Percentage} = \max(0, \min(100, (1.0 - \text{neighbor\_distance}) 
 * **Database & Vectors:** PostgreSQL (16/17) with [`pgvector`](https://github.com/pgvector/pgvector) and `pgvector/pgvector-php`
 * **AI & Embeddings:** [OpenAI PHP](https://github.com/openai-php/laravel) & [Ollama](https://ollama.com)
 * **Testing & Quality:** [Pest PHP](https://pestphp.com), [Larastan / PHPStan (Level 8)](https://github.com/larastan/larastan), [Laravel Pint](https://laravel.com/docs/pint)
-* **Hosting:** [Laravel Cloud](https://cloud.laravel.com) (Serverless PostgreSQL 17 + Dev Compute)
+* **Hosting:** [Laravel Cloud](https://cloud.laravel.com) (Serverless PostgreSQL 17)
 
 ---
 
@@ -109,7 +106,7 @@ docker run -d \
 docker exec pgvector-db createdb -U postgres vectors_postgres_testing
 ```
 
-*(If the container already exists, simply run `docker start pgvector-db`)*
+*(If the container already exists, run `docker start pgvector-db`)*
 
 ### 3. Run Migrations & Seed Articles
 ```bash
@@ -129,7 +126,7 @@ ollama pull nomic-embed-text
 ```bash
 php artisan serve
 ```
-Visit **[http://localhost:8000](http://localhost:8000)** (or your local Herd/Valet domain) to explore the live Vector Lab (`/vector-lab`), articles (`/articles`), and semantic recommendations!
+Visit **[http://localhost:8000](http://localhost:8000)** (or your local Herd/Valet domain) to explore the Vector Lab (`/vector-lab`), articles (`/articles`), and tuition payments (`/payments`)!
 
 ---
 
@@ -158,3 +155,4 @@ For deep dives into design decisions, vector indexing trade-offs, and schema arc
 * [ADR-0002: Semantic Article Recommendations via In-Database Vector Proximity](./documentation/ADR-0002-article-semantic-recommendations-via-vector-proximity.md)
 * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./documentation/ADR-0003-environment-setup-and-local-onboarding.md)
 * [ADR-0004: Interactive AI Vector Lab & In-Database Persistence](./documentation/ADR-0004-interactive-ai-vector-lab-and-in-database-persistence.md)
+* [ADR-0005: Swappable Multi-Payment Gateway Architecture & Enum-Driven Strategy Pattern](./documentation/ADR-0005-swappable-multipayment-gateway-architecture.md)
