@@ -19,33 +19,33 @@
         <div class="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             
             {{-- Statement Header Banner --}}
-            <div class="p-6 sm:p-8 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-zinc-900 via-zinc-900 to-indigo-950 text-white">
+            <div class="p-6 sm:p-8 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-indigo-800 via-indigo-900 to-slate-900 text-white">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs uppercase tracking-widest text-indigo-300 font-bold">Apex Technical Institute</span>
-                            <span class="text-zinc-500">•</span>
-                            <span class="text-xs text-zinc-300">Office of the Bursar</span>
+                            <span class="text-xs uppercase tracking-widest text-indigo-200 font-bold">Apex Technical Institute</span>
+                            <span class="text-indigo-300">•</span>
+                            <span class="text-xs text-indigo-200">Office of the Bursar</span>
                         </div>
                         <h2 class="text-2xl font-bold mt-1 text-white">Tuition & Lab Fee Statement</h2>
-                        <p class="text-xs text-zinc-300 mt-0.5">Invoice: <span class="font-mono text-indigo-200 font-semibold">{{ $bill['invoice_number'] }}</span></p>
+                        <p class="text-xs text-indigo-200 mt-0.5">Invoice: <span class="font-mono text-white font-semibold">{{ $bill['invoice_number'] }}</span></p>
                     </div>
 
                     <div class="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center">
                         @if ($isPaid)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 backdrop-blur-xs">
                                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                                 </svg>
                                 <span>PAID IN FULL</span>
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                                <span class="size-2 rounded-full bg-amber-400 animate-ping"></span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/25 text-amber-200 border border-amber-300/40 backdrop-blur-xs">
+                                <span class="size-2 rounded-full bg-amber-300 animate-ping"></span>
                                 <span>PAYMENT DUE</span>
                             </span>
                         @endif
-                        <span class="text-xs text-zinc-400 mt-1">Due: {{ $bill['due_date'] }}</span>
+                        <span class="text-xs text-indigo-200 mt-1">Due: {{ $bill['due_date'] }}</span>
                     </div>
                 </div>
             </div>
