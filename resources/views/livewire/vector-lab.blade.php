@@ -170,7 +170,7 @@
                             <span>Automatic In-Database Publishing</span>
                         </div>
                         <p>
-                            Calculating a vector generates the 512-dimension embedding and immediately creates and saves this article in the PostgreSQL database. It will appear at the top of the <a href="{{ route('articles.index') }}" target="_blank" class="underline font-semibold hover:text-blue-600">Articles</a> catalog and immediately participate in semantic recommendations using its vector!
+                            Calculating a vector generates the 512-dimension embedding and immediately creates and saves this article in the PostgreSQL database. It will appear at the top of the <a href="{{ route('articles.index') }}" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:text-blue-600">Articles</a> catalog and immediately participate in semantic recommendations using its vector!
                         </p>
                     </div>
                 </form>
@@ -350,6 +350,7 @@
                                 <a
                                     href="{{ route('articles.show', $publishedArticleSlug) }}"
                                     target="_blank"
+                                    rel="noopener noreferrer"
                                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition shrink-0"
                                 >
                                     <span>View on Articles Page</span>
