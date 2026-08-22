@@ -20,7 +20,9 @@ test('vector lab page is publicly accessible without login', function () {
 
     $response->assertOk()
         ->assertSee('Interactive AI Vector Lab')
-        ->assertSee('AI Random Scenario');
+        ->assertSee('Preset articles:')
+        ->assertSee('Or generate article with AI:')
+        ->assertSee('Generate article with OpenAI API');
 });
 
 test('vector lab generates a randomized scenario on mount', function () {

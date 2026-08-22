@@ -21,7 +21,12 @@ test('payments page is publicly accessible without login', function () {
         ->assertSee('Marcus Vance')
         ->assertSee('$1,250.00')
         ->assertSee('Industrial Welding &amp; Metallurgy Apprenticeship', false)
-        ->assertSee('August 31, 2026 (End of Month)');
+        ->assertSee('August 31, 2026 (End of Month)')
+        ->assertSee('Single Responsibility (SRP)')
+        ->assertSee('Open / Closed Principle (OCP)')
+        ->assertSee('Liskov Substitution (LSP)')
+        ->assertSee('Interface Segregation (ISP)')
+        ->assertSee('Dependency Inversion (DIP)');
 });
 
 test('payments page displays itemized schedule and payment provider options', function () {

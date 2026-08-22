@@ -264,11 +264,21 @@
 
                 <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 space-y-1.5">
                     <div class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                        <span class="size-5 rounded-md bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center font-extrabold text-2xs">I & D</span>
-                        <span>Interface Segregation & Dependency Inversion</span>
+                        <span class="size-5 rounded-md bg-amber-100 dark:bg-amber-900/60 flex items-center justify-center font-extrabold text-2xs">I</span>
+                        <span>Interface Segregation (ISP)</span>
                     </div>
                     <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        High-level components depend on lean contracts (<code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded">PaymentGatewayInterface</code>) and factories, never concrete SDK clients.
+                        <code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded">PaymentGatewayInterface</code> exposes only the methods clients require (<code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded">charge()</code> and <code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded">provider()</code>), preventing bloated contracts that force unused methods onto implementers.
+                    </p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 space-y-1.5 md:col-span-2">
+                    <div class="font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                        <span class="size-5 rounded-md bg-rose-100 dark:bg-rose-900/60 flex items-center justify-center font-extrabold text-2xs">D</span>
+                        <span>Dependency Inversion (DIP)</span>
+                    </div>
+                    <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                        High-level components (<code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded">PaymentProcessor</code> and the UI) depend on lean contracts (<code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1 py-0.5 rounded">PaymentGatewayInterface</code>) and factories, never directly coupling to third-party SDK clients.
                     </p>
                 </div>
             </div>
