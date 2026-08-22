@@ -16,54 +16,62 @@
     </div>
 
     {{-- Preset Scenarios & AI Randomizer --}}
-    <div class="flex flex-wrap items-center gap-2">
-        <button
-            wire:click="randomizeScenario"
-            type="button"
-            wire:loading.attr="disabled"
-            wire:target="randomizeScenario"
-            class="px-3.5 py-1.5 text-xs font-semibold rounded-full border border-indigo-300 dark:border-indigo-700 bg-indigo-600 hover:bg-indigo-700 text-white transition shadow-xs cursor-pointer inline-flex items-center gap-1.5"
-        >
-            <span wire:loading.remove wire:target="randomizeScenario" class="inline-flex items-center gap-1">
-                🎲 <span>AI Random Scenario</span>
-            </span>
-            <span wire:loading.inline-flex wire:target="randomizeScenario" class="items-center gap-1" style="display: none;">
-                <svg class="animate-spin size-3 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
-                <span>Generating...</span>
-            </span>
-        </button>
-        <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mx-1">Or Presets:</span>
-        <button
-            wire:click="loadPreset('welding')"
-            type="button"
-            class="px-3 py-1 text-xs font-medium rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 transition cursor-pointer"
-        >
-            🤿 Underwater Welding
-        </button>
-        <button
-            wire:click="loadPreset('electrical')"
-            type="button"
-            class="px-3 py-1 text-xs font-medium rounded-full border border-amber-200 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100 transition cursor-pointer"
-        >
-            ⚡ Journeyman Electrical Exam
-        </button>
-        <button
-            wire:click="loadPreset('financial_aid')"
-            type="button"
-            class="px-3 py-1 text-xs font-medium rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition cursor-pointer"
-        >
-            ☀️ Solar Apprenticeship Grants
-        </button>
-        <button
-            wire:click="loadPreset('safety')"
-            type="button"
-            class="px-3 py-1 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800 bg-purple-50/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition cursor-pointer"
-        >
-            🥽 Eye-Wash & Workshop Safety
-        </button>
+    <div class="space-y-2.5">
+        {{-- Row 1: Presets --}}
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Preset articles:</span>
+            <button
+                wire:click="loadPreset('welding')"
+                type="button"
+                class="px-3 py-1 text-xs font-medium rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 transition cursor-pointer"
+            >
+                🤿 Underwater Welding
+            </button>
+            <button
+                wire:click="loadPreset('electrical')"
+                type="button"
+                class="px-3 py-1 text-xs font-medium rounded-full border border-amber-200 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100 transition cursor-pointer"
+            >
+                ⚡ Journeyman Electrical Exam
+            </button>
+            <button
+                wire:click="loadPreset('financial_aid')"
+                type="button"
+                class="px-3 py-1 text-xs font-medium rounded-full border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition cursor-pointer"
+            >
+                ☀️ Solar Apprenticeship Grants
+            </button>
+            <button
+                wire:click="loadPreset('safety')"
+                type="button"
+                class="px-3 py-1 text-xs font-medium rounded-full border border-purple-200 dark:border-purple-800 bg-purple-50/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition cursor-pointer"
+            >
+                🥽 Eye-Wash & Workshop Safety
+            </button>
+        </div>
+
+        {{-- Row 2: AI Scenario Generator --}}
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Or generate article with AI:</span>
+            <button
+                wire:click="randomizeScenario"
+                type="button"
+                wire:loading.attr="disabled"
+                wire:target="randomizeScenario"
+                class="px-3.5 py-1.5 text-xs font-semibold rounded-full border border-indigo-300 dark:border-indigo-700 bg-indigo-600 hover:bg-indigo-700 text-white transition shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+            >
+                <span wire:loading.remove wire:target="randomizeScenario" class="inline-flex items-center gap-1">
+                    🎲 <span>Generate article with OpenAI API</span>
+                </span>
+                <span wire:loading.inline-flex wire:target="randomizeScenario" class="items-center gap-1" style="display: none;">
+                    <svg class="animate-spin size-3 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Generating...</span>
+                </span>
+            </button>
+        </div>
     </div>
 
     {{-- Main Two-Column Layout --}}
@@ -122,18 +130,6 @@
                         ></textarea>
                     </div>
 
-                    <div class="p-3.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-xs text-blue-900 dark:text-blue-200 leading-relaxed space-y-1">
-                        <div class="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300">
-                            <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                            </svg>
-                            <span>Automatic In-Database Publishing</span>
-                        </div>
-                        <p>
-                            Calculating a vector generates the 512-dimension embedding and immediately creates and saves this article in the PostgreSQL database. It will appear at the top of the <a href="{{ route('articles.index') }}" target="_blank" class="underline font-semibold hover:text-blue-600">Articles</a> catalog and immediately participate in semantic recommendations using its vector!
-                        </p>
-                    </div>
-
                     <div class="pt-2 flex flex-col gap-3">
                         @if ($this->isCached)
                             <label class="flex items-center gap-2 text-xs text-zinc-700 dark:text-zinc-300 cursor-pointer">
@@ -164,6 +160,18 @@
                                 <span>Generating Vector &amp; Saving...</span>
                             </span>
                         </button>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 text-xs text-blue-900 dark:text-blue-200 leading-relaxed space-y-1">
+                        <div class="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300">
+                            <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                            </svg>
+                            <span>Automatic In-Database Publishing</span>
+                        </div>
+                        <p>
+                            Calculating a vector generates the 512-dimension embedding and immediately creates and saves this article in the PostgreSQL database. It will appear at the top of the <a href="{{ route('articles.index') }}" target="_blank" rel="noopener noreferrer" class="underline font-semibold hover:text-blue-600">Articles</a> catalog and immediately participate in semantic recommendations using its vector!
+                        </p>
                     </div>
                 </form>
             </div>
@@ -342,6 +350,7 @@
                                 <a
                                     href="{{ route('articles.show', $publishedArticleSlug) }}"
                                     target="_blank"
+                                    rel="noopener noreferrer"
                                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900 transition shrink-0"
                                 >
                                     <span>View on Articles Page</span>
