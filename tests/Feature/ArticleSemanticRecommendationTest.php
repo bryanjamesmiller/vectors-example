@@ -77,8 +77,11 @@ test('articles index page renders successfully with seeded articles and example 
         ->assertSee('Semantic Search')
         ->assertSee('Try searching:')
         ->assertSee('HVAC Diagnostics')
+        ->assertSee(route('articles.index', ['q' => 'commercial refrigeration superheat diagnostics']))
         ->assertSee('Workshop PPE')
+        ->assertSee(route('articles.index', ['q' => 'personal protective equipment ppe guidelines']))
         ->assertSee('Lockout/Tagout')
+        ->assertSee(route('articles.index', ['q' => 'high voltage electrical lockout tagout procedures']))
         ->assertSee($targetArticle->title);
 });
 
