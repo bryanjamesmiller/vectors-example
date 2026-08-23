@@ -65,7 +65,7 @@ test('homepage renders hero semantic search bar and quick search pills', functio
         ->assertSee('Journeyman Electrical Exam');
 });
 
-test('articles index page renders successfully with seeded articles', function () {
+test('articles index page renders successfully with seeded articles and example search pills', function () {
     $targetArticle = Article::where('is_published', true)->firstOrFail();
     $targetArticle->created_at = now()->addMinute();
     $targetArticle->save();
@@ -75,6 +75,9 @@ test('articles index page renders successfully with seeded articles', function (
     $response->assertOk()
         ->assertSee('Trade School Articles')
         ->assertSee('Semantic Search')
+        ->assertSee('hvac diagnostics')
+        ->assertSee('workshop ppe')
+        ->assertSee('lockout tagout')
         ->assertSee($targetArticle->title);
 });
 

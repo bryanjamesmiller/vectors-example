@@ -59,19 +59,19 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <span>Try:</span>
-                    <a href="{{ route('articles.index', ['q' => 'underwater welding safety']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        <span>🤿</span>
-                        <span class="underline">underwater welding</span>
+                    <a href="{{ route('articles.index', ['q' => 'commercial refrigeration superheat diagnostics']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span>❄️</span>
+                        <span class="underline">hvac diagnostics</span>
                     </a>
                     <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
-                    <a href="{{ route('articles.index', ['q' => 'electrical master exam tactics']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        <span>⚡</span>
-                        <span class="underline">electrical exam</span>
+                    <a href="{{ route('articles.index', ['q' => 'personal protective equipment ppe guidelines']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span>🥽</span>
+                        <span class="underline">workshop ppe</span>
                     </a>
                     <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
-                    <a href="{{ route('articles.index', ['q' => 'solar photovoltaic apprenticeship grants']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        <span>☀️</span>
-                        <span class="underline">solar grants</span>
+                    <a href="{{ route('articles.index', ['q' => 'high voltage electrical lockout tagout procedures']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
+                        <span>🔒</span>
+                        <span class="underline">lockout tagout</span>
                     </a>
                 </div>
             </div>
