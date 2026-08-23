@@ -75,9 +75,10 @@ test('articles index page renders successfully with seeded articles and example 
     $response->assertOk()
         ->assertSee('Trade School Articles')
         ->assertSee('Semantic Search')
-        ->assertSee('hvac diagnostics')
-        ->assertSee('workshop ppe')
-        ->assertSee('lockout tagout')
+        ->assertSee('Try searching:')
+        ->assertSee('HVAC Diagnostics')
+        ->assertSee('Workshop PPE')
+        ->assertSee('Lockout/Tagout')
         ->assertSee($targetArticle->title);
 });
 

@@ -14,68 +14,17 @@
         </div>
 
         {{-- Semantic Vector Search Bar --}}
-        <div class="bg-white dark:bg-zinc-900 rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
-            <form method="GET" action="{{ route('articles.index') }}" class="flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
-                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        name="q"
-                        value="{{ $search }}"
-                        aria-label="Search articles semantically"
-                        placeholder="Search articles semantically (e.g. 'welding safety', 'conduit sizing')..."
-                        class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 pl-10 pr-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
-                    />
-                </div>
-                <div class="flex items-center gap-2">
-                    <button
-                        type="submit"
-                        class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition cursor-pointer shrink-0 shadow-xs"
-                    >
-                        <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                        <span>Semantic Search</span>
-                    </button>
-                    @if ($search !== '')
-                        <a
-                            href="{{ route('articles.index') }}"
-                            class="px-4 py-2.5 text-sm font-medium rounded-xl border border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-center shrink-0"
-                        >
-                            Clear
-                        </a>
-                    @endif
-                </div>
-            </form>
-
-            <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-500 dark:text-zinc-400 pt-1">
-                <div class="flex items-center gap-1.5">
-                    <span class="inline-block size-2 rounded-full bg-emerald-500"></span>
-                    <span>In-database 512d pgvector similarity query (<code>&lt;=&gt;</code> cosine distance)</span>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <span>Try:</span>
-                    <a href="{{ route('articles.index', ['q' => 'commercial refrigeration superheat diagnostics']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        <span>❄️</span>
-                        <span class="underline">hvac diagnostics</span>
-                    </a>
-                    <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
-                    <a href="{{ route('articles.index', ['q' => 'personal protective equipment ppe guidelines']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        <span>🥽</span>
-                        <span class="underline">workshop ppe</span>
-                    </a>
-                    <span class="text-zinc-300 dark:text-zinc-700">&bull;</span>
-                    <a href="{{ route('articles.index', ['q' => 'high voltage electrical lockout tagout procedures']) }}" class="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition">
-                        <span>🔒</span>
-                        <span class="underline">lockout tagout</span>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <x-semantic-search-bar
+            :value="$search"
+            :show-telemetry="true"
+            :light-shadow="true"
+            placeholder="Search articles semantically (e.g. 'welding safety', 'conduit sizing')..."
+            :suggestions="[
+                ['emoji' => '❄️', 'label' => 'HVAC Diagnostics', 'query' => 'commercial refrigeration superheat diagnostics'],
+                ['emoji' => '🥽', 'label' => 'Workshop PPE', 'query' => 'personal protective equipment ppe guidelines'],
+                ['emoji' => '🔒', 'label' => 'Lockout/Tagout', 'query' => 'high voltage electrical lockout tagout procedures'],
+            ]"
+        />
 
         {{-- Active Search Query Notification Banner --}}
         @if ($search !== '')
