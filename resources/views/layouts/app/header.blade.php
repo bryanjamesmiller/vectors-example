@@ -17,7 +17,7 @@
                     {{ __('Vector Lab') }}
                 </flux:navbar.item>
                 <flux:navbar.item icon="sparkles" :href="route('rag')" :current="request()->routeIs('rag')" wire:navigate>
-                    {{ __('Lumion AI') }}
+                    {{ __('RAG Assistant') }}
                 </flux:navbar.item>
                 <flux:navbar.item icon="credit-card" :href="route('payments')" :current="request()->routeIs('payments*')" wire:navigate>
                     {{ __('Tuition Bill') }}
@@ -66,7 +66,7 @@
                         {{ __('Vector Lab')  }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="sparkles" :href="route('rag')" :current="request()->routeIs('rag')" wire:navigate>
-                        {{ __('Lumion AI')  }}
+                        {{ __('RAG Assistant')  }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="credit-card" :href="route('payments')" :current="request()->routeIs('payments*')" wire:navigate>
                         {{ __('Tuition Bill')  }}

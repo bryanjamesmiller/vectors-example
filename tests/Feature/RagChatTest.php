@@ -18,7 +18,7 @@ test('rag chat page is publicly accessible without login', function () {
     $response = $this->get(route('rag'));
 
     $response->assertOk()
-        ->assertSee('Lumion AI')
+        ->assertSee('Trade School AI')
         ->assertSee('RAG Evaluation Arena')
         ->assertSee('Suggested questions to test');
 });

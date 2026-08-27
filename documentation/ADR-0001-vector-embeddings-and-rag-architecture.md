@@ -1,4 +1,4 @@
-# ADR 0001: Multi-Tenant AI Assistant (Lumion AI) & Polymorphic Document RAG Architecture
+# ADR 0001: Multi-Tenant AI Assistant & Polymorphic Document RAG Architecture
 
 * **Status:** Accepted (2026-08-19)
 * **Author:** Architecture & Engineering Team
@@ -20,7 +20,7 @@ Traditional relational queries require administrators to manually cross-referenc
 * *"Identify students in the Welding program at risk of suspension due to missing tool kit payments."*
 
 ### 1.2 The Solution
-Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md), this architecture implements a **Multi-Tenant Retrieval-Augmented Generation (RAG) AI Assistant ("Lumion AI")** embedded directly within Laravel and PostgreSQL:
+Building upon the vector proximity foundation proven in [ADR-0002](./ADR-0002-article-semantic-recommendations-via-vector-proximity.md), this architecture implements a **Multi-Tenant Retrieval-Augmented Generation (RAG) AI Assistant** embedded directly within Laravel and PostgreSQL:
 
 1. **Multi-Tenant Vector Isolation:** 512-dimension vector embeddings stored in PostgreSQL via `pgvector`, hard-scoped by `school_id` and indexed with HNSW cosine distance indexes.
 2. **Polymorphic Chunk Ingestion:** Domain records (`Student`, `ManualPayment`, `CompliancePolicy`) are automatically formatted as structured Markdown summaries and embedded asynchronously on change.
@@ -313,7 +313,7 @@ class RagSearchService
 
 ---
 
-### 4.5 Grounded Assistant Synthesis Service ("Lumion AI")
+### 4.5 Grounded Assistant Synthesis Service
 
 Answers administrative inquiries using retrieved records as strict context boundaries:
 
@@ -350,7 +350,7 @@ class SchoolAiAssistantService
         })->implode("\n\n---\n\n");
 
         $systemPrompt = <<<PROMPT
-        You are Lumion AI, the intelligent operating assistant for trade schools.
+        You are the intelligent operating assistant for trade schools.
         Answer the administrator's question using ONLY the provided school records below.
         If the answer cannot be determined from the context, state: "I could not find records matching that inquiry."
         Do not extrapolate or speculate. Cite specific student names, program trades, and dollar amounts directly.

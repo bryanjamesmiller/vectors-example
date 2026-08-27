@@ -32,7 +32,7 @@
                     ⚔️
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                    Lumion AI
+                    Trade School AI
                 </h1>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
                     <span class="size-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
@@ -369,7 +369,7 @@
                     type="text"
                     maxlength="500"
                     placeholder="Ask a question to test side-by-side RAG grounding..."
-                    aria-label="{{ __('Ask Lumion AI a question') }}"
+                    aria-label="{{ __('Ask a question') }}"
                     class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden pr-16 shadow-xs disabled:opacity-50"
                     wire:loading.attr="disabled"
                     wire:target="sendMessage,loadSuggestion"

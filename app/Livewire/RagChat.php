@@ -17,7 +17,7 @@ use Throwable;
 /**
  * @property-read bool $hasMessages
  */
-#[Title('Lumion AI — RAG Evaluation Arena (Side-by-Side Benchmark)')]
+#[Title('RAG Evaluation Arena (Side-by-Side Benchmark)')]
 class RagChat extends Component
 {
     public string $input = '';
@@ -272,6 +272,6 @@ class RagChat extends Component
     public function render(): View
     {
         return view('livewire.rag-chat')
-            ->layout('layouts.app.header', ['title' => 'Lumion AI — Trade School RAG Assistant']);
+            ->layout('layouts.app.header', ['title' => 'Trade School RAG Assistant']);
     }
 }

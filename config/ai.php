@@ -30,7 +30,7 @@ return [
     | AI Chat & RAG Synthesis Configuration
     |--------------------------------------------------------------------------
     |
-    | Model used by the School AI Assistant (Lumion AI) for RAG context synthesis.
+    | Model used by the Trade School AI Assistant for RAG context synthesis.
     | Low temperature (0.1) enforces deterministic, factual grounding based
     | strictly on retrieved trade school records and policies.
     |
