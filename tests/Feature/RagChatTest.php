@@ -234,3 +234,94 @@ test('RagChat rate limiter blocks excessive messages after 20 attempts', functio
         ->call('sendMessage')
         ->assertSet('messages', []);
 });
+
+test('RagChat handles OpenAI stream failure by flagging has_error and setting grounded to false', function () {
+    $sampleVector = array_fill(0, 512, 0.05);
+
+    $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->once()
+        ->andReturn($sampleVector);
+
+    $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
+    Article::create([
+        'title' => 'HVAC Superheat Diagnostics',
+        'slug' => 'hvac-superheat-diagnostics',
+        'audience' => Audience::Students,
+        'summary' => 'HVAC charging procedures.',
+        'content' => 'TXV and fixed orifice superheat target tables.',
+        'is_published' => true,
+        'embedding' => new Vector($sampleVector),
+    ]);
+
+    // Force OpenAI stream to throw exception
+    OpenAI::fake([
+        new Exception('OpenAI upstream connection timeout'),
+    ]);
+
+    $test = Livewire::test(RagChat::class)
+        ->set('input', 'How do I calculate HVAC superheat?')
+        ->call('sendMessage');
+
+    $messages = $test->get('messages');
+    expect($messages)->toHaveCount(2)
+        ->and($messages[1]['role'])->toBe('assistant')
+        ->and($messages[1]['content'])->toContain('Unable to complete response from AI service')
+        ->and($messages[1]['rag_details']['has_error'])->toBeTrue()
+        ->and($messages[1]['rag_details']['grounded'])->toBeFalse();
+});
+
+test('RagChat retries retrieval with contextual history for pronoun follow-up questions', function () {
+    $weldingVector = array_fill(0, 512, 0.05);
+    $distantVector = array_fill(0, 512, -0.5);
+
+    Article::create([
+        'title' => 'Hyperbaric Pipe Welding Safety',
+        'slug' => 'hyperbaric-pipe-welding-safety',
+        'audience' => Audience::Students,
+        'summary' => 'Chamber safety and oxygen levels.',
+        'content' => 'Complete hyperbaric chamber safety rules and certifications.',
+        'is_published' => true,
+        'embedding' => new Vector($weldingVector),
+    ]);
+
+    OpenAI::fake([
+        CreateStreamedResponse::fake(),
+        CreateStreamedResponse::fake(),
+    ]);
+
+    $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
+    // Turn 1: matches welding
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->with('Tell me about hyperbaric pipe welding safety')
+        ->once()
+        ->andReturn($weldingVector);
+
+    // Turn 2 attempt 1: isolated pronoun query fails threshold
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->with('What are its prerequisites?')
+        ->once()
+        ->andReturn($distantVector);
+
+    // Turn 2 attempt 2: contextual retry combining prior question succeeds
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->with('Tell me about hyperbaric pipe welding safety — What are its prerequisites?')
+        ->once()
+        ->andReturn($weldingVector);
+
+    $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
+    $test = Livewire::test(RagChat::class)
+        ->set('input', 'Tell me about hyperbaric pipe welding safety')
+        ->call('sendMessage')
+        ->set('input', 'What are its prerequisites?')
+        ->call('sendMessage');
+
+    $messages = $test->get('messages');
+    expect($messages)->toHaveCount(4)
+        ->and($messages[2]['content'])->toBe('What are its prerequisites?')
+        ->and($messages[3]['rag_details']['grounded'])->toBeTrue()
+        ->and($messages[3]['rag_details']['retrieved_articles'])->toHaveCount(1)
+        ->and($messages[3]['rag_details']['retrieved_articles'][0]['title'])->toBe('Hyperbaric Pipe Welding Safety');
+});

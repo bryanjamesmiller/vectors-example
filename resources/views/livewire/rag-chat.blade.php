@@ -10,7 +10,15 @@
         }
     }"
     x-init="
-        const observer = new MutationObserver(() => scrollToBottom());
+        const observer = new MutationObserver(() => {
+            const el = $refs.chatContainer;
+            if (el) {
+                const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+                if (distanceFromBottom <= 30) {
+                    scrollToBottom();
+                }
+            }
+        });
         observer.observe($refs.chatContainer, { childList: true, subtree: true, characterData: true });
         scrollToBottom();
     "
@@ -125,7 +133,11 @@
                             <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2">
                                 <div class="flex items-center gap-2">
                                     <span class="font-bold text-xs text-zinc-900 dark:text-zinc-100">Lumion AI</span>
-                                    @if ($msg['rag_details']['grounded'] ?? false)
+                                    @if ($msg['rag_details']['has_error'] ?? false)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+                                            ✕ Error
+                                        </span>
+                                    @elseif ($msg['rag_details']['grounded'] ?? false)
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                             ✓ Grounded in KB
                                         </span>

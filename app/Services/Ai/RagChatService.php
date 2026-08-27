@@ -213,7 +213,7 @@ class RagChatService
             }
         } catch (Throwable $e) {
             report($e);
-            yield ' [Error: Unable to complete response from AI service.]';
+            throw $e;
         }
     }
 

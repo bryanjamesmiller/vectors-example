@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Throwable;
 
 /**
  * @property-read bool $hasMessages
@@ -39,6 +40,7 @@ class RagChat extends Component
      *             match_percentage: int
      *         }>,
      *         grounded: bool,
+     *         has_error: bool,
      *         latency_ms: float,
      *         model: string,
      *         system_prompt: string,
@@ -107,6 +109,18 @@ class RagChat extends Component
         // 1. Retrieval step
         $retrieval = $ragChatService->retrieveContext($userText);
 
+        // Multi-turn conversational fallback: if ungrounded and prior conversation exists, retry with previous question context
+        if (! $retrieval['grounded'] && count($this->messages) > 1) {
+            $lastUserQuestion = $this->getLastUserQuestion();
+            if ($lastUserQuestion !== null && $lastUserQuestion !== $userText) {
+                $contextualQuery = "{$lastUserQuestion} — {$userText}";
+                $retryRetrieval = $ragChatService->retrieveContext($contextualQuery);
+                if ($retryRetrieval['grounded']) {
+                    $retrieval = $retryRetrieval;
+                }
+            }
+        }
+
         // 2. Strict grounding verification
         if (! $retrieval['grounded']) {
             $this->messages[] = [
@@ -115,6 +129,7 @@ class RagChat extends Component
                 'rag_details' => [
                     'retrieved_articles' => [],
                     'grounded' => false,
+                    'has_error' => false,
                     'latency_ms' => $retrieval['latency_ms'],
                     'model' => (string) config('ai.chat.model', 'gpt-4o-mini'),
                     'system_prompt' => 'Ungrounded query: No articles matched the similarity threshold ('.($retrieval['min_threshold'] * 100).'%). LLM call bypassed to enforce strict grounding.',
@@ -136,13 +151,20 @@ class RagChat extends Component
         // 4. Streamed generation
         $this->isStreaming = true;
         $accumulatedContent = '';
+        $hasError = false;
 
-        foreach ($ragChatService->streamChatResponse($fullMessages) as $chunk) {
-            $accumulatedContent .= $chunk;
-            $this->stream(to: 'assistant-response', content: $chunk);
+        try {
+            foreach ($ragChatService->streamChatResponse($fullMessages) as $chunk) {
+                $accumulatedContent .= $chunk;
+                $this->stream(to: 'assistant-response', content: $chunk);
+            }
+        } catch (Throwable) {
+            $hasError = true;
+            $accumulatedContent .= ($accumulatedContent !== '' ? "\n\n" : '').'Unable to complete response from AI service. Please try again.';
+            Flux::toast(text: __('Unable to complete AI response. Please try again.'), variant: 'danger');
+        } finally {
+            $this->isStreaming = false;
         }
-
-        $this->isStreaming = false;
 
         $displayArticles = array_map(
             static fn (array $a): array => [
@@ -163,13 +185,28 @@ class RagChat extends Component
             'content' => $accumulatedContent,
             'rag_details' => [
                 'retrieved_articles' => $displayArticles,
-                'grounded' => true,
+                'grounded' => ! $hasError,
+                'has_error' => $hasError,
                 'latency_ms' => $retrieval['latency_ms'],
                 'model' => (string) config('ai.chat.model', 'gpt-4o-mini'),
                 'system_prompt' => $systemPrompt,
                 'min_threshold' => $retrieval['min_threshold'],
             ],
         ];
+    }
+
+    /**
+     * Look up the previous user question from message history for contextual retry.
+     */
+    protected function getLastUserQuestion(): ?string
+    {
+        for ($i = count($this->messages) - 2; $i >= 0; $i--) {
+            if ($this->messages[$i]['role'] === 'user') {
+                return $this->messages[$i]['content'];
+            }
+        }
+
+        return null;
     }
 
     /**
