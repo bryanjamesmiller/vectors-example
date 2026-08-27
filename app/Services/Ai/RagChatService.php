@@ -153,6 +153,19 @@ class RagChatService
     }
 
     /**
+     * Assemble the baseline system prompt for raw LLM inference without database knowledge grounding.
+     */
+    public function buildRawSystemPrompt(): string
+    {
+        return <<<'PROMPT'
+        You are Lumion AI, a general academic assistant for a vocational trade school academy.
+        You do NOT have access to our private school database, internal tuition records, or campus policy documents.
+        Answer the user's questions relying solely on your general pre-trained knowledge.
+        Maintain a helpful, encouraging tone, and use concise plain text with short paragraphs.
+        PROMPT;
+    }
+
+    /**
      * Construct the full message array for OpenAI chat completions, including conversation history.
      *
      * @param  list<array{role: string, content: string}>  $history

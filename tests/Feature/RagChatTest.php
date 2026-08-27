@@ -19,8 +19,8 @@ test('rag chat page is publicly accessible without login', function () {
 
     $response->assertOk()
         ->assertSee('Lumion AI')
-        ->assertSee('RAG Knowledge Assistant')
-        ->assertSee('Suggested questions to test RAG retrieval');
+        ->assertSee('RAG Evaluation Arena')
+        ->assertSee('Suggested questions to test');
 });
 
 test('ChatInputSanitizer validates length, control chars, html tags, and empty inputs', function () {
@@ -151,6 +151,10 @@ test('RagChat component displays starter prompts and allows clearing chat', func
 
     $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
 
+    OpenAI::fake([
+        CreateStreamedResponse::fake(),
+    ]);
+
     Livewire::test(RagChat::class)
         ->assertSee('What hyperbaric welding safety standards')
         ->assertSet('messages', [])
@@ -161,13 +165,17 @@ test('RagChat component displays starter prompts and allows clearing chat', func
         ->assertSet('messages', []);
 });
 
-test('RagChat refuses ungrounded query without calling OpenAI chat completion', function () {
+test('RagChat refuses ungrounded query without calling OpenAI chat completion for RAG', function () {
     $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
     $mockEmbeddingService->shouldReceive('generateEmbedding')
         ->once()
         ->andReturn(array_fill(0, 512, 0.01));
 
     $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
+    OpenAI::fake([
+        CreateStreamedResponse::fake(),
+    ]);
 
     // No articles in DB -> ungrounded
     $test = Livewire::test(RagChat::class)
@@ -178,7 +186,8 @@ test('RagChat refuses ungrounded query without calling OpenAI chat completion', 
     expect($messages)->toHaveCount(2)
         ->and($messages[1]['role'])->toBe('assistant')
         ->and($messages[1]['content'])->toContain('does not currently contain')
-        ->and($messages[1]['rag_details']['grounded'])->toBeFalse();
+        ->and($messages[1]['rag_details']['grounded'])->toBeFalse()
+        ->and($messages[1]['raw_details'])->not->toBeNull();
 });
 
 test('RagChat executes grounded RAG pipeline and stores RAG details', function () {
@@ -201,8 +210,9 @@ test('RagChat executes grounded RAG pipeline and stores RAG details', function (
         'embedding' => new Vector($sampleVector),
     ]);
 
-    // Mock OpenAI streamed response
+    // Mock OpenAI streamed response (RAG stream + Raw stream)
     OpenAI::fake([
+        CreateStreamedResponse::fake(),
         CreateStreamedResponse::fake(),
     ]);
 
@@ -286,7 +296,10 @@ test('RagChat retries retrieval with contextual history for pronoun follow-up qu
         'embedding' => new Vector($weldingVector),
     ]);
 
+    // 2 turns x 2 streams (RAG + Raw) = 4 fake streams
     OpenAI::fake([
+        CreateStreamedResponse::fake(),
+        CreateStreamedResponse::fake(),
         CreateStreamedResponse::fake(),
         CreateStreamedResponse::fake(),
     ]);
@@ -324,4 +337,43 @@ test('RagChat retries retrieval with contextual history for pronoun follow-up qu
         ->and($messages[3]['rag_details']['grounded'])->toBeTrue()
         ->and($messages[3]['rag_details']['retrieved_articles'])->toHaveCount(1)
         ->and($messages[3]['rag_details']['retrieved_articles'][0]['title'])->toBe('Hyperbaric Pipe Welding Safety');
+});
+
+test('RagChat arena generates dual responses comparing RAG against raw baseline', function () {
+    $sampleVector = array_fill(0, 512, 0.05);
+
+    $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->once()
+        ->andReturn($sampleVector);
+
+    $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
+    Article::create([
+        'title' => 'Undersea Welding Chamber Protocol',
+        'slug' => 'undersea-welding-chamber-protocol',
+        'audience' => Audience::Students,
+        'summary' => 'Welding chamber procedures.',
+        'content' => 'Pressure manifold operations and ASME standards.',
+        'is_published' => true,
+        'embedding' => new Vector($sampleVector),
+    ]);
+
+    OpenAI::fake([
+        CreateStreamedResponse::fake(),
+        CreateStreamedResponse::fake(),
+    ]);
+
+    $test = Livewire::test(RagChat::class)
+        ->set('input', 'What are the welding chamber protocols?')
+        ->call('sendMessage');
+
+    $messages = $test->get('messages');
+    expect($messages)->toHaveCount(2)
+        ->and($messages[1]['role'])->toBe('assistant')
+        ->and($messages[1]['content'])->toBe('Hello! This is a fake chat response.')
+        ->and($messages[1]['rag_details']['grounded'])->toBeTrue()
+        ->and($messages[1]['rag_details']['retrieved_articles'])->toHaveCount(1)
+        ->and($messages[1]['raw_details']['content'])->toBe('Hello! This is a fake chat response.')
+        ->and($messages[1]['raw_details']['grounded'])->toBeFalse();
 });
