@@ -71,8 +71,8 @@ class ChatInputSanitizer
         }
 
         // Remove dangerous URI schemes and event-handler patterns (javascript:, data:, vbscript:)
-        $cleanedText = (string) preg_replace('/(javascript|vbscript|data):/i', '$1_blocked:', $withoutTags);
-        $cleanedText = (string) preg_replace('/on\w+\s*=/i', 'event_blocked=', $cleanedText);
+        $cleanedText = (string) preg_replace('/\b(javascript|vbscript|data):/i', '$1_blocked:', $withoutTags);
+        $cleanedText = (string) preg_replace('/\bon\w+\s*=/i', 'event_blocked=', $cleanedText);
         if ($cleanedText !== $withoutTags) {
             $flags[] = 'script_handlers_neutralized';
             $wasModified = true;

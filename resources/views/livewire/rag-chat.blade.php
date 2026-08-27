@@ -9,8 +9,11 @@
             });
         }
     }"
-    x-init="scrollToBottom()"
-    x-effect="scrollToBottom()"
+    x-init="
+        const observer = new MutationObserver(() => scrollToBottom());
+        observer.observe($refs.chatContainer, { childList: true, subtree: true, characterData: true });
+        scrollToBottom();
+    "
     class="max-w-5xl mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6 flex flex-col h-[calc(100vh-5rem)]"
 >
     {{-- Header Bar --}}
@@ -282,6 +285,7 @@
                     type="text"
                     maxlength="500"
                     placeholder="Ask a question about trade school programs, safety protocols, or admissions..."
+                    aria-label="{{ __('Ask Lumion AI a question') }}"
                     class="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden pr-16 shadow-xs disabled:opacity-50"
                     wire:loading.attr="disabled"
                     wire:target="sendMessage,loadSuggestion"

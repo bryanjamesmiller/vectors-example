@@ -52,7 +52,14 @@ test('ChatInputSanitizer validates length, control chars, html tags, and empty i
         ->and($cleanedHtml['safe_input'])->toBe('alert("hack")Tell me about HVAC')
         ->and($cleanedHtml['flags'])->toContain('html_tags_stripped');
 
-    // 5. Empty or punctuation/emoji only
+    // 5. Word boundary preservation (e.g. metadata:, condition=)
+    $legitText = 'Tell me about metadata: and condition=safe';
+    $cleanedLegit = $sanitizer->sanitize($legitText);
+    expect($cleanedLegit['is_valid'])->toBeTrue()
+        ->and($cleanedLegit['safe_input'])->toBe('Tell me about metadata: and condition=safe')
+        ->and($cleanedLegit['flags'])->not->toContain('script_handlers_neutralized');
+
+    // 6. Empty or punctuation/emoji only
     $empty = $sanitizer->sanitize('   ');
     expect($empty['is_valid'])->toBeFalse()
         ->and($empty['rejection_reason'])->toContain('valid question');
@@ -137,12 +144,19 @@ test('RagChatService retrieveContext rejects articles below similarity threshold
 });
 
 test('RagChat component displays starter prompts and allows clearing chat', function () {
+    $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->once()
+        ->andReturn(array_fill(0, 512, 0.01));
+
+    $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
     Livewire::test(RagChat::class)
         ->assertSee('What hyperbaric welding safety standards')
         ->assertSet('messages', [])
-        ->set('messages', [
-            ['role' => 'user', 'content' => 'Hello', 'rag_details' => null],
-        ])
+        ->set('input', 'Hello world')
+        ->call('sendMessage')
+        ->assertCount('messages', 2)
         ->call('clearChat')
         ->assertSet('messages', []);
 });
@@ -200,9 +214,11 @@ test('RagChat executes grounded RAG pipeline and stores RAG details', function (
     expect($messages)->toHaveCount(2)
         ->and($messages[0]['role'])->toBe('user')
         ->and($messages[1]['role'])->toBe('assistant')
+        ->and($messages[1]['content'])->toBe('Hello! This is a fake chat response.')
         ->and($messages[1]['rag_details']['grounded'])->toBeTrue()
         ->and($messages[1]['rag_details']['retrieved_articles'])->toHaveCount(1)
-        ->and($messages[1]['rag_details']['retrieved_articles'][0]['title'])->toBe('Undersea Welding Chamber Protocol');
+        ->and($messages[1]['rag_details']['retrieved_articles'][0]['title'])->toBe('Undersea Welding Chamber Protocol')
+        ->and(array_key_exists('content', $messages[1]['rag_details']['retrieved_articles'][0]))->toBeFalse();
 });
 
 test('RagChat rate limiter blocks excessive messages after 20 attempts', function () {

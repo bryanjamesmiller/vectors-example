@@ -9,6 +9,7 @@ use App\Services\Ai\RagChatService;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\RateLimiter;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -33,7 +34,6 @@ class RagChat extends Component
      *             slug: string,
      *             audience: string,
      *             summary: ?string,
-     *             content: string,
      *             distance: float,
      *             similarity: float,
      *             match_percentage: int
@@ -46,6 +46,7 @@ class RagChat extends Component
      *     }|null
      * }>
      */
+    #[Locked]
     public array $messages = [];
 
     public bool $isStreaming = false;
@@ -143,11 +144,25 @@ class RagChat extends Component
 
         $this->isStreaming = false;
 
+        $displayArticles = array_map(
+            static fn (array $a): array => [
+                'id' => $a['id'],
+                'title' => $a['title'],
+                'slug' => $a['slug'],
+                'audience' => $a['audience'],
+                'summary' => $a['summary'],
+                'distance' => $a['distance'],
+                'similarity' => $a['similarity'],
+                'match_percentage' => $a['match_percentage'],
+            ],
+            $retrieval['articles']
+        );
+
         $this->messages[] = [
             'role' => 'assistant',
             'content' => $accumulatedContent,
             'rag_details' => [
-                'retrieved_articles' => $retrieval['articles'],
+                'retrieved_articles' => $displayArticles,
                 'grounded' => true,
                 'latency_ms' => $retrieval['latency_ms'],
                 'model' => (string) config('ai.chat.model', 'gpt-4o-mini'),

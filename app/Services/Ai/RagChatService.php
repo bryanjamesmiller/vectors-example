@@ -58,7 +58,14 @@ class RagChatService
         $records = Article::query()
             ->where('is_published', true)
             ->whereNotNull('embedding')
-            ->select('articles.*')
+            ->select([
+                'articles.id',
+                'articles.title',
+                'articles.slug',
+                'articles.audience',
+                'articles.summary',
+                'articles.content',
+            ])
             ->selectRaw('(articles.embedding <=> ?) as cosine_distance', [new Vector($queryEmbedding)])
             ->orderBy('cosine_distance')
             ->take($limit)
@@ -117,10 +124,14 @@ class RagChatService
         foreach ($articles as $idx => $article) {
             $sourceNum = $idx + 1;
             $summaryText = $article['summary'] ? "\nSummary: {$article['summary']}" : '';
+            $truncatedContent = mb_strlen($article['content']) > 1500
+                ? mb_substr($article['content'], 0, 1500).'... [truncated]'
+                : $article['content'];
+
             $contextBlocks[] = <<<CONTEXT
             [Source {$sourceNum}: "{$article['title']}"] (Audience: {$article['audience']}){$summaryText}
             Content:
-            {$article['content']}
+            {$truncatedContent}
             CONTEXT;
         }
 
@@ -134,7 +145,7 @@ class RagChatService
         1. Base your answers solely on the provided trade school articles below. Do not fabricate programs, certifications, tuition details, or policies not mentioned in the context.
         2. Cite your sources in your answers when referencing specific facts or guidelines, e.g. [Source 1: "Title"].
         3. If the context does not provide sufficient information to answer the question, clearly state that our current trade school documentation does not cover that specific topic, and invite them to speak with admissions or campus student services.
-        4. Maintain an encouraging, career-focused, professional tone. Format responses using clean markdown (bullet points, bold highlights) for easy reading.
+        4. Maintain an encouraging, career-focused, professional tone. Use concise plain text with short paragraphs and hyphen-prefixed lists for easy reading.
 
         OFFICIAL TRADE SCHOOL KNOWLEDGE BASE CONTEXT:
         {$contextString}
@@ -202,7 +213,7 @@ class RagChatService
             }
         } catch (Throwable $e) {
             report($e);
-            yield " [Error: Unable to complete response from AI service ({$e->getMessage()})]";
+            yield ' [Error: Unable to complete response from AI service.]';
         }
     }
 
@@ -228,7 +239,7 @@ class RagChatService
         } catch (Throwable $e) {
             report($e);
 
-            return "Unable to complete response from AI service: {$e->getMessage()}";
+            return 'Unable to complete response from AI service.';
         }
     }
 }
