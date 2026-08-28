@@ -417,3 +417,55 @@ test('RagChat arena generates dual responses comparing RAG against raw baseline'
         ->and($messages[1]['raw_details']['content'])->toBe('Hello! This is a fake chat response.')
         ->and($messages[1]['raw_details']['grounded'])->toBeFalse();
 });
+
+test('RagChatService buildMessages retains the specified number of complete turns', function () {
+    $service = app(RagChatService::class);
+
+    // Build 15 turns (30 messages)
+    $history = [];
+    for ($i = 1; $i <= 15; $i++) {
+        $history[] = ['role' => 'user', 'content' => "Question {$i}"];
+        $history[] = ['role' => 'assistant', 'content' => "Answer {$i}"];
+    }
+
+    // Default maxHistoryTurns is 10 -> should retain 20 history messages + 1 system + 1 current user = 22
+    $messages = $service->buildMessages('System prompt', $history, 'Current question', 10);
+    expect($messages)->toHaveCount(22)
+        ->and($messages[0]['role'])->toBe('system')
+        ->and($messages[1]['content'])->toBe('Question 6')
+        ->and($messages[20]['content'])->toBe('Answer 15')
+        ->and($messages[21]['content'])->toBe('Current question');
+});
+
+test('RagChat bounds in-memory message array to 40 entries to prevent payload bloat', function () {
+    $sampleVector = array_fill(0, 512, 0.05);
+
+    $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->andReturn($sampleVector);
+
+    $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
+    // Pre-populate 40 messages (20 turns)
+    $initialMessages = [];
+    for ($i = 1; $i <= 20; $i++) {
+        $initialMessages[] = ['role' => 'user', 'content' => "Old Q{$i}", 'rag_details' => null, 'raw_details' => null];
+        $initialMessages[] = ['role' => 'assistant', 'content' => "Old A{$i}", 'rag_details' => ['grounded' => false], 'raw_details' => ['grounded' => false]];
+    }
+
+    OpenAI::fake([
+        CreateStreamedResponse::fake(),
+    ]);
+
+    $test = Livewire::test(RagChat::class);
+    /** @var RagChat $instance */
+    $instance = $test->instance();
+    $instance->messages = $initialMessages;
+    $instance->input = 'What is new?';
+    $instance->sendMessage(new ChatInputSanitizer, app(RagChatService::class));
+
+    // Total would be 42 without cap; with cap it must be exactly 40
+    expect($instance->messages)->toHaveCount(40)
+        ->and($instance->messages[0]['content'])->toBe('Old Q2')
+        ->and($instance->messages[38]['content'])->toBe('What is new?');
+});

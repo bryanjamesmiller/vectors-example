@@ -180,8 +180,8 @@ class RagChatService
             ],
         ];
 
-        // Slice to the last N conversation messages
-        $recentHistory = array_slice($history, -$maxHistoryTurns);
+        // Slice to the last N complete conversation turns (user + assistant)
+        $recentHistory = array_slice($history, -($maxHistoryTurns * 2));
         foreach ($recentHistory as $turn) {
             if (in_array($turn['role'], ['user', 'assistant'], true) && ! empty($turn['content'])) {
                 $messages[] = [

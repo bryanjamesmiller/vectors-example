@@ -7,3 +7,4 @@ This directory contains Architecture Decision Records for the application.
 * [ADR-0003: Environment Setup, Local Onboarding, and Vector Operations](./ADR-0003-environment-setup-and-local-onboarding.md)
 * [ADR-0004: Interactive AI Vector Lab & In-Database Persistence](./ADR-0004-interactive-ai-vector-lab-and-in-database-persistence.md)
 * [ADR-0005: Swappable Multi-Payment Gateway Architecture & Enum-Driven Strategy Pattern](./ADR-0005-swappable-multipayment-gateway-architecture.md)
+* [ADR-0006: Retrieval-Augmented Generation (RAG) Evaluation Arena & Dual-Stream Benchmark Architecture](./ADR-0006-rag-evaluation-arena-and-dual-stream-architecture.md)

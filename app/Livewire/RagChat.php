@@ -244,6 +244,11 @@ class RagChat extends Component
                 'grounded' => false,
             ],
         ];
+
+        // Bound in-memory component messages to the last 40 entries (20 complete turns) to prevent Livewire payload bloat
+        if (count($this->messages) > 40) {
+            $this->messages = array_slice($this->messages, -40);
+        }
     }
 
     /**

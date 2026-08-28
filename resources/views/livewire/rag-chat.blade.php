@@ -35,7 +35,7 @@
                     Trade School AI
                 </h1>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
-                    <span class="size-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                    <span class="size-1.5 rounded-full bg-indigo-500 motion-safe:animate-pulse"></span>
                     RAG Evaluation Arena
                 </span>
                 <span class="text-xs font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
@@ -71,7 +71,7 @@
         @if (empty($messages))
             {{-- Empty Welcome State --}}
             <div class="h-full flex flex-col items-center justify-center text-center max-w-3xl mx-auto py-6 space-y-6">
-                <div class="size-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-blue-500 to-emerald-400 flex items-center justify-center text-white text-3xl shadow-lg shadow-indigo-500/20 animate-pulse">
+                <div class="size-16 rounded-2xl bg-gradient-to-tr from-indigo-500 via-blue-500 to-emerald-400 flex items-center justify-center text-white text-3xl shadow-lg shadow-indigo-500/20 motion-safe:animate-pulse">
                     ⚔️
                 </div>
 
