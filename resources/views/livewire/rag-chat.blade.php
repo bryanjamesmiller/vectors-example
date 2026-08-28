@@ -268,7 +268,7 @@
                                             @if (!empty($assistantMsg['rag_details']['system_prompt']))
                                                 <details class="text-[10px]">
                                                     <summary class="font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer select-none">
-                                                        ▶ View Grounded System Prompt
+                                                        View Grounded System Prompt
                                                     </summary>
                                                     <pre class="mt-1.5 p-2 rounded-lg bg-zinc-950 text-zinc-300 font-mono text-[9px] max-h-40 overflow-y-auto border border-zinc-800 whitespace-pre-wrap leading-relaxed select-all">{{ $assistantMsg['rag_details']['system_prompt'] }}</pre>
                                                 </details>
@@ -321,7 +321,7 @@
                                     @if (!empty($assistantMsg['raw_details']['system_prompt']))
                                         <details class="text-[10px]">
                                             <summary class="font-semibold text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer select-none">
-                                                ▶ View Baseline System Prompt
+                                                View Baseline System Prompt
                                             </summary>
                                             <pre class="mt-1.5 p-2 rounded-lg bg-zinc-950 text-zinc-300 font-mono text-[9px] max-h-32 overflow-y-auto border border-zinc-800 whitespace-pre-wrap leading-relaxed select-all">{{ $assistantMsg['raw_details']['system_prompt'] }}</pre>
                                         </details>
