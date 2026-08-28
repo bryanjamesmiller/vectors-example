@@ -29,35 +29,7 @@
                 </div>
 
                 {{-- Action Links --}}
-                <div class="pt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
-                    <a
-                        href="{{ route('articles.index') }}"
-                        class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>Articles & Recommendations &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
-                    <a
-                        href="{{ route('rag') }}"
-                        class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>RAG Evaluation Arena &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
-                    <a
-                        href="{{ route('vector-lab') }}"
-                        class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>Vector Lab &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
-                    <a
-                        href="{{ route('payments') }}"
-                        class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>Tuition Bill & Payments &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
+                <div class="pt-4 flex items-center justify-center text-sm">
                     <a
                         href="#architecture"
                         class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
