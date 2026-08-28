@@ -29,28 +29,7 @@
                 </div>
 
                 {{-- Action Links --}}
-                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-                    <a
-                        href="{{ route('articles.index') }}"
-                        class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>Browse All Articles &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
-                    <a
-                        href="{{ route('vector-lab') }}"
-                        class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>Interactive Vector Lab &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
-                    <a
-                        href="{{ route('payments') }}"
-                        class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline inline-flex items-center gap-1.5"
-                    >
-                        <span>Tuition Bill & Payments &rarr;</span>
-                    </a>
-                    <span class="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
+                <div class="pt-4 flex items-center justify-center text-sm">
                     <a
                         href="#architecture"
                         class="text-zinc-600 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline inline-flex items-center gap-1.5"
@@ -106,6 +85,184 @@
                         class="px-6 py-3 rounded-xl bg-white text-indigo-900 font-semibold hover:bg-indigo-50 transition shadow whitespace-nowrap text-sm"
                     >
                         Browse All 18 Articles &rarr;
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Showcase: RAG Evaluation Arena -->
+        <section class="py-16 sm:py-20 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div class="text-center space-y-3 max-w-3xl mx-auto">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Live AI Benchmark</span>
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+                        RAG Evaluation Arena: Side-by-Side Dual-Stream Benchmark
+                    </h2>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed">
+                        Experience the direct contrast between in-database vector knowledge grounding and unassisted LLM parametric memory. For every user query, the arena dispatches two parallel pipelines against the exact same underlying model (<code class="text-xs font-mono bg-zinc-200 dark:bg-zinc-800 px-1.5 py-0.5 rounded">{{ config('ai.chat.model', 'gpt-4o-mini') }}</code>) with real-time token streaming.
+                    </p>
+                </div>
+
+                <!-- Side-by-Side Comparison Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left: Grounded RAG -->
+                    <div class="rounded-2xl border border-emerald-200 dark:border-emerald-800/60 bg-white dark:bg-zinc-900 shadow-sm p-6 space-y-4 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="size-6 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-xs font-bold">🟢</span>
+                                <h3 class="font-bold text-base text-zinc-900 dark:text-zinc-100">Grounded RAG Pipeline</h3>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                In-Database Grounded
+                            </span>
+                        </div>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Queries PostgreSQL 16 <code class="text-xs font-mono">pgvector</code> with HNSW cosine distance (<code class="text-xs font-mono">&lt;=&gt;</code>) to retrieve authoritative trade school records, curriculum documents, and safety standards.
+                        </p>
+                        <ul class="space-y-2 text-xs text-zinc-600 dark:text-zinc-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-500 font-bold">✓</span>
+                                <span><strong>Strict Grounding Cutoff:</strong> Enforces a 75% similarity threshold, refusing out-of-domain queries to guarantee zero hallucination.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-500 font-bold">✓</span>
+                                <span><strong>Inline Citations:</strong> Attributes facts directly to verified sources with inspectable cosine distances and match percentages.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-emerald-500 font-bold">✓</span>
+                                <span><strong>Live Dual Stream:</strong> Incremental token streaming powered by Livewire 4 <code class="text-xs font-mono">wire:stream</code>.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Right: Raw LLM Baseline -->
+                    <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm p-6 space-y-4 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-zinc-400 to-zinc-500"></div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="size-6 rounded-lg bg-zinc-500 text-white flex items-center justify-center text-xs font-bold">⚪</span>
+                                <h3 class="font-bold text-base text-zinc-900 dark:text-zinc-100">Raw LLM Baseline</h3>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                                Parametric Memory Only
+                            </span>
+                        </div>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Queries the exact same model with zero database context, relying solely on general training weights to demonstrate typical enterprise LLM failure modes.
+                        </p>
+                        <ul class="space-y-2 text-xs text-zinc-600 dark:text-zinc-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-500 font-bold">!</span>
+                                <span><strong>Zero Database Context:</strong> Cannot verify campus-specific rules, tuition fee schedules, or lab requirements.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-500 font-bold">!</span>
+                                <span><strong>Hallucination Drift:</strong> Frequently guesses plausible-sounding but unverified curriculum specifications.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-zinc-400 font-bold">•</span>
+                                <span><strong>Context Isolation:</strong> Maintains partitioned conversation history so RAG knowledge never contaminates baseline turns.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Showcase Call-to-Action Card -->
+                <div class="p-8 rounded-2xl bg-gradient-to-r from-indigo-950 via-zinc-900 to-emerald-950 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg border border-indigo-900/50">
+                    <div class="space-y-2 text-center md:text-left">
+                        <div class="flex items-center gap-2 justify-center md:justify-start">
+                            <span class="text-lg">⚔️</span>
+                            <h3 class="text-xl font-bold">Launch the Side-by-Side RAG Arena</h3>
+                        </div>
+                        <p class="text-indigo-200 text-sm max-w-xl">
+                            Try asking questions like <em>"What are hyperbaric welding chamber protocols?"</em> or <em>"How do I diagnose HVAC superheat?"</em> to watch both streams generate simultaneously.
+                        </p>
+                    </div>
+                    <a
+                        href="{{ route('rag') }}"
+                        class="px-6 py-3 rounded-xl bg-emerald-500 text-white font-semibold hover:bg-emerald-400 transition shadow whitespace-nowrap text-sm flex items-center gap-2"
+                    >
+                        <span>Open RAG Arena</span>
+                        <span>&rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Showcase: Tuition Payments & SOLID Architecture -->
+        <section class="py-16 sm:py-20 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+                <div class="text-center space-y-3 max-w-3xl mx-auto">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Enterprise Design Patterns</span>
+                    <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+                        Swappable Tuition Payments with SOLID Strategy Architecture
+                    </h2>
+                    <p class="text-zinc-600 dark:text-zinc-400 text-base leading-relaxed">
+                        An enterprise-grade, enum-driven Strategy Pattern implementation demonstrating real-world Open-Closed (OCP) and Dependency Inversion (DIP) principles. Trade schools can seamlessly swap or add payment processors without modifying existing business logic.
+                    </p>
+                </div>
+
+                <!-- 4 SOLID Architecture Pillars Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
+                        <div class="size-10 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                            🔌
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Strategy Pattern</h3>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Every provider implements <code class="text-[11px] font-mono">PaymentGatewayInterface</code> with strict contract adherence (<code class="text-[11px] font-mono">charge()</code>, <code class="text-[11px] font-mono">calculateFee()</code>).
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
+                        <div class="size-10 rounded-lg bg-violet-50 dark:bg-violet-950 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-sm">
+                            🏭
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Enum-Driven Factory</h3>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            <code class="text-[11px] font-mono">PaymentGatewayFactory</code> dynamically resolves concrete drivers from typed <code class="text-[11px] font-mono">PaymentGatewayType</code> enums without brittle conditionals.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
+                        <div class="size-10 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+                            🔒
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Open-Closed (OCP)</h3>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Add a new processor (Square, Apple Pay) by creating a single class. Zero changes required in checkout controllers or existing gateways.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 space-y-2.5">
+                        <div class="size-10 rounded-lg bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm">
+                            🛡️
+                        </div>
+                        <h3 class="font-bold text-sm text-zinc-900 dark:text-zinc-100">Atomic Transactions</h3>
+                        <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                            Database transactional boundaries guarantee that balance updates, ledger records, and audit events never fall out of sync.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Showcase Call-to-Action Card -->
+                <div class="p-8 rounded-2xl bg-gradient-to-r from-zinc-900 to-indigo-950 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg border border-zinc-800">
+                    <div class="space-y-2 text-center md:text-left">
+                        <div class="flex items-center gap-2 justify-center md:justify-start">
+                            <span class="text-lg">💳</span>
+                            <h3 class="text-xl font-bold">Try the Interactive Tuition Billing Demo</h3>
+                        </div>
+                        <p class="text-zinc-300 text-sm max-w-xl">
+                            Test live gateway swapping between Stripe, Authorize.Net, Cash App, Zelle, and Manual Check with automatic fee calculations and student ledger tracking.
+                        </p>
+                    </div>
+                    <a
+                        href="{{ route('payments') }}"
+                        class="px-6 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-zinc-100 transition shadow whitespace-nowrap text-sm flex items-center gap-2"
+                    >
+                        <span>Explore Tuition Bill & Payments</span>
+                        <span>&rarr;</span>
                     </a>
                 </div>
             </div>
@@ -189,6 +346,10 @@
             </div>
             <div class="flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-2">
                 <a href="{{ route('articles.index') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Articles</a>
+                <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                <a href="{{ route('rag') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">RAG Arena</a>
+                <span class="text-zinc-300 dark:text-zinc-700">•</span>
+                <a href="{{ route('vector-lab') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Vector Lab</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>
                 <a href="{{ route('payments') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">Tuition Bill</a>
                 <span class="text-zinc-300 dark:text-zinc-700">•</span>

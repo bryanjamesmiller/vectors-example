@@ -1,16 +1,10 @@
 <x-layouts::app.header :title="__('Trade School Articles')">
     <div class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8 space-y-8">
-        <div class="border-b border-zinc-200 dark:border-zinc-800 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
-                <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    Browse articles with in-database semantic vector search & recommendations powered by PostgreSQL & pgvector.
-                </p>
-            </div>
-            <a href="{{ route('vector-lab') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 transition shrink-0">
-                <span>🚀 Open Vector Lab</span>
-                <span aria-hidden="true">&rarr;</span>
-            </a>
+        <div class="border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <h1 class="text-3xl font-bold tracking-tight">Trade School Articles</h1>
+            <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Browse articles with in-database semantic vector search & recommendations powered by PostgreSQL & pgvector.
+            </p>
         </div>
 
         {{-- Semantic Vector Search Bar --}}

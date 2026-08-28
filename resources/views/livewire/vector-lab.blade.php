@@ -271,7 +271,7 @@
 
                         <details class="text-xs group">
                             <summary class="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer select-none">
-                                ▶ View complete 512-dimension float array
+                                View complete 512-dimension float array
                             </summary>
                             <div class="mt-2 p-3 rounded-xl bg-zinc-950 text-emerald-300 font-mono text-[11px] max-h-48 overflow-y-auto border border-zinc-800 leading-relaxed select-all">
                                 [{{ implode(', ', array_map(fn($v) => number_format($v, 6, '.', ''), $generatedVector)) }}]
