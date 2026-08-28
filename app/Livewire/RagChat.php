@@ -126,9 +126,14 @@ class RagChat extends Component
             if ($lastUserQuestion !== null && $lastUserQuestion !== $userText) {
                 $contextualQuery = "{$lastUserQuestion} — {$userText}";
                 $retryRetrieval = $ragChatService->retrieveContext($contextualQuery);
+
+                $totalLatency = $retrieval['latency_ms'] + $retryRetrieval['latency_ms'];
+
                 if ($retryRetrieval['grounded']) {
                     $retrieval = $retryRetrieval;
                 }
+
+                $retrieval['latency_ms'] = $totalLatency;
             }
         }
 
@@ -167,6 +172,10 @@ class RagChat extends Component
                     $ragContent .= $chunk;
                     $this->stream(to: 'rag-response', content: $chunk);
                 }
+
+                if (trim($ragContent) === '') {
+                    throw new \RuntimeException('RAG stream completed without content.');
+                }
             } catch (Throwable) {
                 $ragError = true;
                 $ragContent .= ($ragContent !== '' ? "\n\n" : '').'Unable to complete response from AI service. Please try again.';
@@ -199,6 +208,10 @@ class RagChat extends Component
             foreach ($ragChatService->streamChatResponse($rawMessages) as $chunk) {
                 $rawContent .= $chunk;
                 $this->stream(to: 'raw-response', content: $chunk);
+            }
+
+            if (trim($rawContent) === '') {
+                throw new \RuntimeException('Baseline stream completed without content.');
             }
         } catch (Throwable) {
             $rawError = true;

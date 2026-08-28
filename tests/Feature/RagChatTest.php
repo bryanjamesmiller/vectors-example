@@ -336,7 +336,47 @@ test('RagChat retries retrieval with contextual history for pronoun follow-up qu
         ->and($messages[2]['content'])->toBe('What are its prerequisites?')
         ->and($messages[3]['rag_details']['grounded'])->toBeTrue()
         ->and($messages[3]['rag_details']['retrieved_articles'])->toHaveCount(1)
-        ->and($messages[3]['rag_details']['retrieved_articles'][0]['title'])->toBe('Hyperbaric Pipe Welding Safety');
+        ->and($messages[3]['rag_details']['retrieved_articles'][0]['title'])->toBe('Hyperbaric Pipe Welding Safety')
+        ->and($messages[3]['rag_details']['latency_ms'])->toBeGreaterThan(0);
+});
+
+test('RagChat treats empty stream completion as failure and triggers fallback', function () {
+    $sampleVector = array_fill(0, 512, 0.05);
+
+    $mockEmbeddingService = Mockery::mock(EmbeddingService::class);
+    $mockEmbeddingService->shouldReceive('generateEmbedding')
+        ->once()
+        ->andReturn($sampleVector);
+
+    $this->app->instance(EmbeddingService::class, $mockEmbeddingService);
+
+    Article::create([
+        'title' => 'HVAC Superheat Diagnostics',
+        'slug' => 'hvac-superheat-diagnostics',
+        'audience' => Audience::Students,
+        'summary' => 'HVAC charging procedures.',
+        'content' => 'TXV and fixed orifice superheat target tables.',
+        'is_published' => true,
+        'embedding' => new Vector($sampleVector),
+    ]);
+
+    $emptyStream = fopen('php://memory', 'r+');
+
+    OpenAI::fake([
+        CreateStreamedResponse::fake($emptyStream),
+        CreateStreamedResponse::fake(),
+    ]);
+
+    $test = Livewire::test(RagChat::class)
+        ->set('input', 'How do I calculate HVAC superheat?')
+        ->call('sendMessage');
+
+    $messages = $test->get('messages');
+    expect($messages)->toHaveCount(2)
+        ->and($messages[1]['role'])->toBe('assistant')
+        ->and($messages[1]['content'])->toContain('Unable to complete response from AI service')
+        ->and($messages[1]['rag_details']['has_error'])->toBeTrue()
+        ->and($messages[1]['rag_details']['grounded'])->toBeFalse();
 });
 
 test('RagChat arena generates dual responses comparing RAG against raw baseline', function () {

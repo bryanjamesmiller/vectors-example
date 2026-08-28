@@ -60,12 +60,6 @@
                     <span>Clear Arena</span>
                 </button>
             @endif
-            <a
-                href="{{ route('vector-lab') }}"
-                class="px-3 py-1.5 text-xs font-medium rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition cursor-pointer flex items-center gap-1.5 shadow-xs"
-            >
-                <span>🔬 Vector Lab</span>
-            </a>
         </div>
     </div>
 
